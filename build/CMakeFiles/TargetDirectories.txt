@@ -1,3 +1,0 @@
-/Users/saadtaj/Desktop/CS Projects/textEditorTutorial/build/CMakeFiles/minipad.dir
-/Users/saadtaj/Desktop/CS Projects/textEditorTutorial/build/CMakeFiles/edit_cache.dir
-/Users/saadtaj/Desktop/CS Projects/textEditorTutorial/build/CMakeFiles/rebuild_cache.dir
