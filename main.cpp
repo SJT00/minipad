@@ -1,71 +1,64 @@
 #ifdef __APPLE__
 // Defined before OpenGL and GLUT includes to avoid deprecation messages
 #define GL_SILENCE_DEPRECATION
+#endif
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#endif
 
 #include <iostream>
 
-const size_t WIDTH = 640;
-const size_t HEIGHT = 480;
-const char* WINDOW_NAME = "Test OpenGL";
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void processInput(GLFWwindow *window);
 
-/*
- * Callback to handle the "close window" event, once the user pressed the Escape key.
- */
-static void quit_callback(GLFWwindow *window, int key, int scancode, int action, int _mods)
+int main()
 {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-}
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 
-int main(void)
-{
-    GLFWwindow *window;
-
-    if (!glfwInit()) {
-        std::cerr << "ERROR: could not start GLFW3" << std::endl;
-        return -1; // Initialize the lib
-    }
-
-    // Minimum target is OpenGL 4.1
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    window = glfwCreateWindow(HEIGHT, WIDTH, WINDOW_NAME, NULL, NULL);
-    if (!window)
+    GLFWwindow *window = glfwCreateWindow(800, 600, "Minipad", NULL, NULL);
+    if (window == NULL)
     {
-        std::cerr << "ERROR: could not open window with GLFW3" << std::endl;
+        std::cout << "Failed to create GLFW Window" << std::endl;
         glfwTerminate();
         return -1;
     }
-    // Close the window as soon as the Escape key has been pressed
-    glfwSetKeyCallback(window, quit_callback);
-    // Makes the window context current
     glfwMakeContextCurrent(window);
 
-    // Initialize GLAD
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        return -1; // Initialization failed
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to load GLAD" << std::endl;
+        return -1;
     }
 
-    const GLubyte* renderer = glGetString(GL_RENDERER);
-    const GLubyte* version = glGetString(GL_VERSION);
-    std::cout << "Renderer: " << renderer << std::endl;
-    std::cout << "OpenGL version supported: " << version << std::endl;
+    glViewport(0, 0, 800, 600);
 
-    // Now we have a current OpenGL context, we can use OpenGL normally
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
     while (!glfwWindowShouldClose(window))
     {
-        // Render
+        processInput(window);
+
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        // Swap front and back buffers
+        
         glfwSwapBuffers(window);
-        // Poll for and process events
         glfwPollEvents();
     }
 
-    // ... here, the user closed the window
     glfwTerminate();
     return 0;
+}
+
+void framebuffer_size_callback(GLFWwindow *window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+
+void processInput(GLFWwindow *window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
 }
