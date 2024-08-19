@@ -16,7 +16,7 @@ cd "$BUILD_DIR"
 
 # Run CMake and Make
 echo "Running CMake..."
-cmake ..
+cmake .. -GXCODE
 
 echo "Running Make..."
 make
