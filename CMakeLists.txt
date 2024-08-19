@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 
-project(myproject VERSION 1.0)
+project(minipad VERSION 1.0)
 
 # Include the directories for GLAD and your project
 include_directories(/usr/local/include/)
