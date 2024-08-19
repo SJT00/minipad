@@ -8,7 +8,7 @@ link_directories(/usr/local/lib/)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CXX_FLAGS "-Wall")
-set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 set(CMAKE_BUILD_TYPE Debug)
 
 # Explicitly set the output directory for the executable to the main directory
@@ -16,13 +16,19 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 add_executable(minipad main.cpp)
 
+find_package(Freetype REQUIRED)
+find_package(glm CONFIG REQUIRED)
 find_package(glfw3 3.4 REQUIRED)
 find_package(OpenGL REQUIRED)
 
-target_include_directories(minipad PUBLIC ${OPENGL_INCLUDE_DIR})
-
-target_link_libraries(minipad "-framework QuartzCore")
-target_link_libraries(minipad "-framework Cocoa")
-target_link_libraries(minipad "-framework OpenGL")
-target_link_libraries(minipad "-framework IOKit")
-target_link_libraries(minipad glad glfw ${OPENGL_LIBRARIES})
+# Link libraries including macOS frameworks and required compression libraries
+target_link_libraries(minipad PRIVATE 
+    glad 
+    glfw 
+    glm::glm 
+    Freetype::Freetype 
+    ${OPENGL_LIBRARIES} 
+    "-framework QuartzCore -framework Cocoa -framework OpenGL -framework IOKit"
+    -lbz2
+    -lz
+)
