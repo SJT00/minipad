@@ -1,2 +1,2 @@
 # texteditortutorial
-Follow along of text editor tutorial in C
+Minimalist custom text editor made in C++ with OPENGL
