@@ -29,6 +29,7 @@ std::map<char, Character> Characters;
 
 int main()
 {
+    // glfw: initialize and configure
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -45,8 +46,13 @@ int main()
         glfwTerminate();
         return -1;
     }
+
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    // OPENGL: context setter
     glfwMakeContextCurrent(window);
 
+    // glad: initialize and configure
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to load GLAD" << std::endl;
@@ -55,8 +61,7 @@ int main()
 
     glViewport(0, 0, scrWidth, scrHeight);
 
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
+    // FreeType: initialize and load
     FT_Library ft;
 
     if (FT_Init_FreeType(&ft))
@@ -79,6 +84,7 @@ int main()
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
 
+    // main: render loop
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
