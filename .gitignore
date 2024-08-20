@@ -1,8 +1,4 @@
 .vscode
 build/
 minipad
-*.xcodeproj/
-CMakeFiles/
-CMakeScripts/
-*.cmake
-CMakeCache.txt
+.DS_Store
