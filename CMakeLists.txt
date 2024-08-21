@@ -14,7 +14,11 @@ set(CMAKE_BUILD_TYPE Debug)
 # Explicitly set the output directory for the executable to the main directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
-add_executable(minipad ./src/main.cpp)
+# Collect all .cpp files in the src directory and its subdirectories
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+
+# Add the executable with all collected source files
+add_executable(minipad ${SOURCES})
 
 find_package(Freetype REQUIRED)
 find_package(glm CONFIG REQUIRED)
