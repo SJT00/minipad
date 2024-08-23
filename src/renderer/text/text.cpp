@@ -95,8 +95,8 @@ void TextRenderer::RenderText(
 
         float xpos = x + ch.Bearing.x * scale;
         float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
-        float w = x + ch.Size.x * scale;
-        float h = x + ch.Size.y * scale;
+        float w = ch.Size.x * scale;
+        float h = ch.Size.y * scale;
 
         float vertices[6][4] = {
             {xpos, ypos + h, 0.0f, 0.0f},
