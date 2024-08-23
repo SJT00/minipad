@@ -44,9 +44,12 @@ int main()
         return -1;
     }
 
-    glViewport(0, 0, scrWidth, scrHeight);
+    // glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    TextRenderer *textRenderer = new TextRenderer();
+    TextRenderer textRenderer(scrWidth, scrHeight);
+    textRenderer.Load("./assets/fonts/Futura.ttf", 12);
 
     // main: render loop
     while (!glfwWindowShouldClose(window))
@@ -55,11 +58,14 @@ int main()
         glClearColor(0.1216f, 0.1216f, 0.1216f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        textRenderer.RenderText("This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+        textRenderer.RenderText("(C) LearnOpenGL.com", 540.0f, 570.0f, 0.5f, glm::vec3(0.3, 0.7f, 0.9f));
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    delete textRenderer;
+    // delete textRenderer;
     glfwTerminate();
     return 0;
 }

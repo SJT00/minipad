@@ -6,7 +6,7 @@
 #include FT_FREETYPE_H
 #include <glm/glm.hpp>
 #include <map>
-#include "shader.h"
+#include "../shader.h"
 
 struct Character
 {
