@@ -7,10 +7,12 @@
 #include "renderer/text/text.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void processInput(GLFWwindow *window);
+void character_callback(GLFWwindow *window, unsigned int codepoint);
 
 const unsigned int scrWidth = 800;
 const unsigned int scrHeight = 600;
+
+std::string curr;
 
 int main()
 {
@@ -44,22 +46,22 @@ int main()
         return -1;
     }
 
-    // glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     TextRenderer textRenderer(scrWidth, scrHeight);
-    textRenderer.Load("./assets/fonts/Futura.ttf", 12);
+    textRenderer.Load("./assets/fonts/Futura.ttf", 14);
+
+    glfwSetCharCallback(window, character_callback);
 
     // main: render loop
     while (!glfwWindowShouldClose(window))
     {
-        processInput(window);
         glClearColor(0.1216f, 0.1216f, 0.1216f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        textRenderer.RenderText("This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-        textRenderer.RenderText("(C) LearnOpenGL.com", 540.0f, 570.0f, 0.5f, glm::vec3(0.3, 0.7f, 0.9f));
+        textRenderer.RenderText(curr, 25.0f, 570.0f, 1.0f, glm::vec3(1, 1, 1));
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -75,8 +77,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window)
+void character_callback(GLFWwindow *window, unsigned int codepoint)
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+    curr += (char)codepoint;
 }
