@@ -25,7 +25,7 @@ public:
     // gets and binds relevant font textures per char
     void Load(std::string font, unsigned int fontSize);
     // renders via precompiled characters map
-    void RenderText(std::string text, float x, float y, float scale, glm::vec3 color = glm::vec3(1.0f));
+    void RenderText(std::string text, float x, float y, float scale = 1.0f, glm::vec3 color = glm::vec3(1.0f));
 
 private:
     // vtx arr obj and vtx buffer obj for render state
