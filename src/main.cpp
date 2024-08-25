@@ -4,15 +4,13 @@
 #endif
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "renderer/text/text.h"
+#include "core/editor.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void character_callback(GLFWwindow *window, unsigned int codepoint);
 
 const unsigned int scrWidth = 800;
 const unsigned int scrHeight = 600;
-
-std::string curr;
 
 int main()
 {
@@ -50,10 +48,8 @@ int main()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    TextRenderer textRenderer(scrWidth, scrHeight);
-    textRenderer.Load("./assets/fonts/Futura.ttf", 14);
-
-    glfwSetCharCallback(window, character_callback);
+    Editor editor(scrWidth,scrHeight);
+    editor.setCallbacks(window);
 
     // main: render loop
     while (!glfwWindowShouldClose(window))
@@ -61,13 +57,12 @@ int main()
         glClearColor(0.1216f, 0.1216f, 0.1216f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        textRenderer.RenderText(curr, 25.0f, 570.0f, 1.0f, glm::vec3(1, 1, 1));
+        editor.Render();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    // delete textRenderer;
     glfwTerminate();
     return 0;
 }
@@ -75,9 +70,4 @@ int main()
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
-}
-
-void character_callback(GLFWwindow *window, unsigned int codepoint)
-{
-    curr += (char)codepoint;
 }
