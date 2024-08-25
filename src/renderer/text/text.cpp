@@ -87,6 +87,7 @@ void TextRenderer::RenderText(
     this->TextShader.setVec3("textColor", color);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(this->VAO);
+    this->TextShader.setInt("text", 0);
 
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end(); c++)
