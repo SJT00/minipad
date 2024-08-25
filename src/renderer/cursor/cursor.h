@@ -9,10 +9,11 @@ class CursorRenderer
 {
 public:
     Shader CursorShader;
-    CursorRenderer();
-    void RenderCursor(glm::vec3 cursorloc);
+    CursorRenderer(unsigned int width, unsigned int height);
+    void RenderCursor(float x, float y, glm::vec3 color = glm::vec3(1.0f));
 
 private:
+    unsigned int VAO, VBO;
 };
 
 #endif

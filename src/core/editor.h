@@ -3,7 +3,7 @@
 #define EDITOR_H
 
 #include "../renderer/text/text.h"
-// #include "../renderer/cursor/cursor.h"
+#include "../renderer/cursor/cursor.h"
 #include "../input/keyboard/keyboard.h"
 
 class Editor
@@ -15,7 +15,7 @@ public:
 
 private:
     TextRenderer textRenderer;
-    // CursorRenderer cursorRenderer;
+    CursorRenderer cursorRenderer;
     KeyboardHandler keyboardHandler;
 
     // glm::vec3 cursorLocation;
