@@ -9,6 +9,7 @@ Editor::Editor(unsigned int width, unsigned int height)
 void Editor::setCallbacks(GLFWwindow *window)
 {
     glfwSetCharCallback(window, keyboardHandler.CharCallback);
+    glfwSetKeyCallback(window, keyboardHandler.KeyCallback);
 }
 
 void Editor::Render()
