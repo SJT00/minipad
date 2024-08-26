@@ -13,13 +13,13 @@ public:
     Editor(unsigned int width = Globals::scrWidth, unsigned int height = Globals::scrHeight);
     void setCallbacks(GLFWwindow *window);
     void Render();
+    std::string text;
+    glm::vec2 cursorloc = glm::vec2(10.0f, 584.0f);
 
 private:
     TextRenderer textRenderer;
     CursorRenderer cursorRenderer;
     KeyboardHandler keyboardHandler;
-
-    // glm::vec3 cursorLocation;
 };
 
 #endif

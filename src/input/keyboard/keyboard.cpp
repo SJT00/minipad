@@ -1,19 +1,35 @@
 #include "keyboard.h"
+#include "../../core/editor.h"
 #include <iostream>
 
-KeyboardHandler::KeyboardHandler()
+KeyboardHandler::KeyboardHandler(TextRenderer *textRenderer, CursorRenderer *cursorRenderer)
+    : textRenderer(textRenderer), cursorRenderer(cursorRenderer)
 {
 }
 
 void KeyboardHandler::CharCallback(GLFWwindow *window, unsigned int codepoint)
 {
-    // std::cout << codepoint << "\n";
+    Editor *handler = (Editor *)glfwGetWindowUserPointer(window);
+    handler->text += codepoint;
 }
 
-void KeyboardHandler::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void KeyboardHandler::KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-    if(key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
+    Editor *handler = (Editor *)glfwGetWindowUserPointer(window);
+    if (key == GLFW_KEY_RIGHT)
     {
-        std::cout << key << "\n";
+        handler->cursorloc[0] += 6;
+    }
+    if (key == GLFW_KEY_LEFT)
+    {
+        handler->cursorloc[0] -= 6;
+    }
+    if (key == GLFW_KEY_UP)
+    {
+        handler->cursorloc[1] += 6;
+    }
+    if (key == GLFW_KEY_DOWN)
+    {
+        handler->cursorloc[1] -= 6;
     }
 }
