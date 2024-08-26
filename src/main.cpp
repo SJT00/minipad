@@ -53,7 +53,7 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     Editor editor;
-    editor.setCallbacks(window);
+    editor.SetCallbacks(window);
 
     // main: render loop
     while (!glfwWindowShouldClose(window))

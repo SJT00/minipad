@@ -6,11 +6,16 @@ Editor::Editor(unsigned int width, unsigned int height)
     this->textRenderer.Load("./assets/fonts/Futura.ttf", 14);
 }
 
-void Editor::setCallbacks(GLFWwindow *window)
+void Editor::SetCallbacks(GLFWwindow *window)
 {
     glfwSetWindowUserPointer(window, this);
     glfwSetCharCallback(window, keyboardHandler.CharCallback);
     glfwSetKeyCallback(window, keyboardHandler.KeyCallback);
+}
+
+void Editor::SetCursorActive(bool active)
+{
+    this->cursorRenderer.active = active;
 }
 
 void Editor::Render()

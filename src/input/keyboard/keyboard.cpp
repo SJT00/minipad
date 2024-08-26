@@ -16,6 +16,16 @@ void KeyboardHandler::CharCallback(GLFWwindow *window, unsigned int codepoint)
 void KeyboardHandler::KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
     Editor *handler = (Editor *)glfwGetWindowUserPointer(window);
+
+    if (action == GLFW_PRESS)
+    {
+        handler->SetCursorActive(true);
+    }
+    else if(action == GLFW_RELEASE)
+    {
+        handler->SetCursorActive(false);
+    }
+
     if (key == GLFW_KEY_RIGHT)
     {
         handler->cursorloc[0] += 6;

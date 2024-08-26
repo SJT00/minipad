@@ -24,7 +24,14 @@ void CursorRenderer::RenderCursor(float x, float y, glm::vec3 color)
     this->CursorShader.use();
     float newAlpha = (sin(glfwGetTime() * 2.0f * M_PI) + 1.0f) / 2.0f;
     this->CursorShader.setVec3("curColor", color);
-    this->CursorShader.setFloat("alpha", newAlpha);
+    if (!this->active)
+    {
+        this->CursorShader.setFloat("alpha", newAlpha);
+    }
+    else
+    {
+        this->CursorShader.setFloat("alpha", 1.0f);
+    }
     glBindVertexArray(this->VAO);
     int h = 14 / 2;
     float vertices[2][2] = {

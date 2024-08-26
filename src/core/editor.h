@@ -11,10 +11,11 @@ class Editor
 {
 public:
     Editor(unsigned int width = Globals::scrWidth, unsigned int height = Globals::scrHeight);
-    void setCallbacks(GLFWwindow *window);
+    void SetCallbacks(GLFWwindow *window);
     void Render();
     std::string text;
     glm::vec2 cursorloc = glm::vec2(10.0f, 584.0f);
+    void SetCursorActive(bool active);
 
 private:
     TextRenderer textRenderer;

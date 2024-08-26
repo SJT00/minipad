@@ -12,6 +12,7 @@ public:
     Shader CursorShader;
     CursorRenderer(unsigned int width = Globals::scrWidth, unsigned int height= Globals::scrHeight);
     void RenderCursor(float x, float y, glm::vec3 color = glm::vec3(1.0f));
+    bool active = false;
 
 private:
     unsigned int VAO, VBO;
