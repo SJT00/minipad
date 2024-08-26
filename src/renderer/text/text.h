@@ -6,6 +6,7 @@
 #include FT_FREETYPE_H
 #include <glm/glm.hpp>
 #include <map>
+#include "../../globals.h"
 #include "../shader.h"
 
 struct Character
@@ -21,7 +22,7 @@ class TextRenderer
 public:
     std::map<char, Character> Characters;
     Shader TextShader;
-    TextRenderer(unsigned int width, unsigned int height);
+    TextRenderer(unsigned int width = Globals::scrWidth, unsigned int height = Globals::scrHeight);
     // gets and binds relevant font textures per char
     void Load(std::string font, unsigned int fontSize);
     // renders via precompiled characters map

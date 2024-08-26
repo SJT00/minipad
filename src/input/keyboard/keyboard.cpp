@@ -1,5 +1,5 @@
 #include "keyboard.h"
-// #include <iostream>
+#include <iostream>
 
 KeyboardHandler::KeyboardHandler()
 {
@@ -12,5 +12,8 @@ void KeyboardHandler::CharCallback(GLFWwindow *window, unsigned int codepoint)
 
 void KeyboardHandler::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    // std::cout << codepoint << "\n";
+    if(key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
+    {
+        std::cout << key << "\n";
+    }
 }

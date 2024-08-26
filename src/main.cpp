@@ -4,13 +4,17 @@
 #endif
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "globals.h"
 #include "core/editor.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void character_callback(GLFWwindow *window, unsigned int codepoint);
 
-const unsigned int scrWidth = 800;
-const unsigned int scrHeight = 600;
+namespace Globals
+{
+    unsigned int scrWidth = 800;
+    unsigned int scrHeight = 600;
+}
 
 int main()
 {
@@ -23,7 +27,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 #endif
 
-    GLFWwindow *window = glfwCreateWindow(scrWidth, scrHeight, "Minipad", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(Globals::scrWidth, Globals::scrHeight, "Minipad", NULL, NULL);
 
     if (window == NULL)
     {
@@ -48,7 +52,7 @@ int main()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Editor editor(scrWidth,scrHeight);
+    Editor editor;
     editor.setCallbacks(window);
 
     // main: render loop
