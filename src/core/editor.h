@@ -14,7 +14,7 @@ public:
     void SetCallbacks(GLFWwindow *window);
     void Render();
     std::string text;
-    glm::vec2 cursorloc = glm::vec2(10.0f, 584.0f);
+    glm::vec2 cursorloc = glm::vec2(10.0f, 590.0f);
     void SetCursorActive(bool active);
 
 private:

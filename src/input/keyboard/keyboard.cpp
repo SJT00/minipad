@@ -17,29 +17,28 @@ void KeyboardHandler::KeyCallback(GLFWwindow *window, int key, int scancode, int
 {
     Editor *handler = (Editor *)glfwGetWindowUserPointer(window);
 
-    if (action == GLFW_PRESS)
+    if (action == GLFW_PRESS || action == GLFW_REPEAT)
     {
         handler->SetCursorActive(true);
+        if (key == GLFW_KEY_RIGHT)
+        {
+            handler->cursorloc[0] += 6;
+        }
+        if (key == GLFW_KEY_LEFT)
+        {
+            handler->cursorloc[0] -= 6;
+        }
+        if (key == GLFW_KEY_UP)
+        {
+            handler->cursorloc[1] += 6;
+        }
+        if (key == GLFW_KEY_DOWN)
+        {
+            handler->cursorloc[1] -= 6;
+        }
     }
-    else if(action == GLFW_RELEASE)
+    else
     {
         handler->SetCursorActive(false);
-    }
-
-    if (key == GLFW_KEY_RIGHT)
-    {
-        handler->cursorloc[0] += 6;
-    }
-    if (key == GLFW_KEY_LEFT)
-    {
-        handler->cursorloc[0] -= 6;
-    }
-    if (key == GLFW_KEY_UP)
-    {
-        handler->cursorloc[1] += 6;
-    }
-    if (key == GLFW_KEY_DOWN)
-    {
-        handler->cursorloc[1] -= 6;
     }
 }
