@@ -69,8 +69,6 @@ void TextRenderer::Load(std::string font, unsigned int fontSize)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         // now store character for later use
         Character character = {
-            0,
-            0,
             texture,
             glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
@@ -96,8 +94,8 @@ void TextRenderer::RenderText(
     {
         Character ch = Characters[*c];
 
-        float xpos = ch.x + ch.Bearing.x * scale;
-        float ypos = ch.y - (ch.Size.y - ch.Bearing.y) * scale;
+        float xpos = x + ch.Bearing.x * scale;
+        float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
         float w = ch.Size.x * scale;
         float h = ch.Size.y * scale;
 
