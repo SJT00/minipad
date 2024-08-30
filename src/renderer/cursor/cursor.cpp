@@ -35,8 +35,8 @@ void CursorRenderer::RenderCursor(float x, float y, glm::vec3 color)
     glBindVertexArray(this->VAO);
     int h = Globals::fontSize / 2;
     float vertices[2][2] = {
-        {x, y + h},
-        {x, y - h}};
+        {x, (y-h/2) - h},
+        {x, (y-h/2) + h}};
 
     glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
