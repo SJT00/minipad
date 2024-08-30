@@ -32,7 +32,15 @@ glm::vec2 Editor::GridToInt(glm::vec2 gridPos)
     {
         throw std::runtime_error("Rows out of bound");
     }
-    returnVec[0] = Globals::padding + gridPos[0] * (Globals::fontWidth);
+
+    unsigned int adv = 0;
+    for (int chars = 0; chars < gridPos[0]; chars++)
+    {
+        char c = this->textArr[gridPos[1]][chars];
+        Character cChar = this->textRenderer.Characters[c];
+        adv += cChar.Advance >> 6;
+    }
+    returnVec[0] = Globals::padding + adv;
     returnVec[1] = Globals::padding + gridPos[1] * (Globals::fontSize + Globals::lineSpacing);
     return returnVec;
 }
