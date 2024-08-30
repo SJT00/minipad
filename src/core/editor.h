@@ -24,6 +24,7 @@ public:
 private:
     TextRenderer textRenderer;
     KeyboardHandler keyboardHandler;
+    int rows = (Globals::scrHeight - Globals::padding) / (Globals::fontSize + Globals::lineSpacing);
 };
 
 #endif
