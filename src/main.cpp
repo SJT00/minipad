@@ -8,12 +8,15 @@
 #include "core/editor.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void character_callback(GLFWwindow *window, unsigned int codepoint);
 
 namespace Globals
 {
     unsigned int scrWidth = 800;
     unsigned int scrHeight = 600;
+    unsigned int padding = 15;
+    unsigned int lineSpacing = 6;
+    unsigned int fontSize = 14;
+    unsigned int fontWidth = 6;
 }
 
 int main()
