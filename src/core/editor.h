@@ -2,6 +2,9 @@
 #ifndef EDITOR_H
 #define EDITOR_H
 
+#include <iostream>
+#include <vector>
+#include <string>
 #include "../globals.h"
 #include "../renderer/text/text.h"
 #include "../renderer/cursor/cursor.h"
@@ -13,13 +16,13 @@ public:
     Editor(unsigned int width = Globals::scrWidth, unsigned int height = Globals::scrHeight);
     void SetCallbacks(GLFWwindow *window);
     void Render();
-    std::string text;
-    glm::vec2 cursorloc = glm::vec2(10.0f, 590.0f);
+    std::vector<std::string> textArr;
+    glm::vec2 cursorloc = glm::vec2(Globals::padding, Globals::scrHeight - Globals::padding);
     void SetCursorActive(bool active);
+    CursorRenderer cursorRenderer;
 
 private:
     TextRenderer textRenderer;
-    CursorRenderer cursorRenderer;
     KeyboardHandler keyboardHandler;
 };
 
