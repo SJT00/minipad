@@ -22,7 +22,7 @@ void Editor::SetCursorActive(bool active)
 
 void Editor::Render()
 {
-    this->textRenderer.RenderText(this->textArr[0], 10.0f, 584.0f);
+    this->textRenderer.RenderText(this->textArr[0], Globals::padding, 584.0f);
     // each typable row
     for (int r = 0; r < this->rows; r++)
     {

@@ -20,9 +20,9 @@ public:
     glm::vec2 cursorloc = glm::vec2(Globals::padding, Globals::scrHeight - Globals::padding);
     void SetCursorActive(bool active);
     CursorRenderer cursorRenderer;
+    TextRenderer textRenderer;
 
 private:
-    TextRenderer textRenderer;
     KeyboardHandler keyboardHandler;
     int rows = (Globals::scrHeight - Globals::padding) / (Globals::fontSize + Globals::lineSpacing);
 };
