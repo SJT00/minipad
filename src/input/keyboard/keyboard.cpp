@@ -6,10 +6,11 @@ void KeyboardHandler::CharCallback(GLFWwindow *window, unsigned int codepoint)
 {
     Editor *handler = (Editor *)glfwGetWindowUserPointer(window);
     char latestChar = (char)codepoint;
-    handler->textArr[0] += latestChar;
+    handler->textArr[handler->cursorloc[1]] += latestChar;
     // get char specific advance
     Character lastChar = handler->textRenderer.Characters[(char)codepoint];
-    handler->cursorloc[0] += lastChar.Advance >> 6;
+    // lastChar.Advance >> 6;
+    handler->cursorloc[0] += 1;
 }
 
 void KeyboardHandler::KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -19,21 +20,31 @@ void KeyboardHandler::KeyCallback(GLFWwindow *window, int key, int scancode, int
     if (action == GLFW_PRESS || action == GLFW_REPEAT)
     {
         handler->SetCursorActive(true);
-        if (key == GLFW_KEY_RIGHT)
+        if (key == GLFW_KEY_RIGHT && handler->cursorloc[0] < handler->textArr[handler->cursorloc[1]].size())
         {
-            handler->cursorloc[0] += Globals::fontWidth + 1;
+            // char c = handler->textArr[handler->cursorloc[1]][handler->cursorloc[0]+1];
+            // Character cChar = handler->textRenderer.Characters[c];
+            // handler->cursorloc[0] += cChar.Advance >> 6;
+             handler->cursorloc[0] += 1;
         }
-        if (key == GLFW_KEY_LEFT)
+        if (key == GLFW_KEY_LEFT && handler->cursorloc[0] > 0)
         {
-            handler->cursorloc[0] -= Globals::fontWidth - 1;
+            // char c = handler->textArr[handler->cursorloc[1]][handler->cursorloc[0]-1];
+            // Character cChar = handler->textRenderer.Characters[c];
+            handler->cursorloc[0] -= 1;
         }
-        if (key == GLFW_KEY_UP)
+        if (key == GLFW_KEY_UP && handler->cursorloc[1] > 0)
         {
-            handler->cursorloc[1] += Globals::fontSize;
+            handler->cursorloc[1] -= 1;
         }
-        if (key == GLFW_KEY_DOWN)
+        if (key == GLFW_KEY_DOWN && handler->textArr[handler->cursorloc[1] + 1].size() > 0)
         {
-            handler->cursorloc[1] -= Globals::fontSize;
+            handler->cursorloc[1] += 1;
+        }
+        if (key == GLFW_KEY_ENTER){
+            handler->textArr[handler->cursorloc[1]].append("\n");
+            handler->cursorloc[0] = 0;
+            handler->cursorloc[1] += 1;
         }
     }
     else
