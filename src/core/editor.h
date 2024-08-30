@@ -15,16 +15,18 @@ class Editor
 public:
     Editor(unsigned int width = Globals::scrWidth, unsigned int height = Globals::scrHeight);
     void SetCallbacks(GLFWwindow *window);
-    void Render();
-    std::vector<std::string> textArr;
-    glm::vec2 cursorloc = glm::vec2(Globals::padding, Globals::scrHeight - Globals::padding);
     void SetCursorActive(bool active);
+    void Render();
+    glm::vec2 GridToInt(glm::vec2 gridPos);
+    std::vector<std::string> textArr;
+    glm::vec2 cursorloc = glm::vec2(0, 0);
     CursorRenderer cursorRenderer;
     TextRenderer textRenderer;
 
 private:
     KeyboardHandler keyboardHandler;
     int rows = (Globals::scrHeight - Globals::padding) / (Globals::fontSize + Globals::lineSpacing);
+    int cols = (Globals::scrWidth - Globals::padding) / (Globals::fontWidth);
 };
 
 #endif

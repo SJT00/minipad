@@ -5,7 +5,6 @@ Editor::Editor(unsigned int width, unsigned int height)
 {
     this->textRenderer.Load("./assets/fonts/Futura.ttf", Globals::fontSize);
     this->textArr.resize(static_cast<size_t>(this->rows));
-    std::cout << textArr.size() << "\n";
 }
 
 void Editor::SetCallbacks(GLFWwindow *window)
@@ -20,12 +19,39 @@ void Editor::SetCursorActive(bool active)
     this->cursorRenderer.active = active;
 }
 
+glm::vec2 Editor::GridToInt(glm::vec2 gridPos)
+{
+    // set to top left col/row
+    glm::vec2 returnVec = glm::vec2(Globals::padding, Globals::padding);
+    if (gridPos[0] > this->cols)
+    {
+        returnVec[0] = Globals::padding;
+        returnVec[1] += 1;
+    }
+    if (gridPos[1] > this->rows)
+    {
+        throw std::runtime_error("Rows out of bound");
+    }
+    returnVec[0] = Globals::padding + gridPos[0] * (Globals::fontWidth);
+    returnVec[1] = Globals::padding + gridPos[1] * (Globals::fontSize + Globals::lineSpacing);
+    return returnVec;
+}
+
 void Editor::Render()
 {
-    this->textRenderer.RenderText(this->textArr[0], Globals::padding, 584.0f);
-    // each typable row
-    for (int r = 0; r < this->rows; r++)
+    glm::vec2 cursorVec = GridToInt(this->cursorloc);
+    int lastRow = 0;
+    if (textArr[0].size() > 0)
     {
-        this->cursorRenderer.RenderCursor(this->cursorloc[0], this->cursorloc[1] - r * (Globals::fontSize + Globals::lineSpacing));
+        while (textArr[lastRow].size() != 0 && lastRow < rows)
+        {
+            lastRow += 1;
+        }
     }
+    for (int r = 0; r <= lastRow; r++)
+    {
+        glm::vec2 textVec = GridToInt(glm::vec2(0, r));
+        this->textRenderer.RenderText(this->textArr[r], textVec[0], textVec[1]);
+    }
+    this->cursorRenderer.RenderCursor(cursorVec[0], cursorVec[1]);
 }
