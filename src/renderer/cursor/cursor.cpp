@@ -6,7 +6,7 @@ CursorRenderer::CursorRenderer(unsigned int width, unsigned int height)
     : CursorShader("./src/renderer/cursor/shaders/cursor.vs", "./src/renderer/cursor/shaders/cursor.fs")
 {
     this->CursorShader.use();
-    this->CursorShader.setMat4("projection", glm::ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height)));
+    this->CursorShader.setMat4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f));
 
     glGenVertexArrays(1, &this->VAO);
     glGenBuffers(1, &this->VBO);
