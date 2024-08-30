@@ -33,7 +33,7 @@ void CursorRenderer::RenderCursor(float x, float y, glm::vec3 color)
         this->CursorShader.setFloat("alpha", 1.0f);
     }
     glBindVertexArray(this->VAO);
-    int h = 14 / 2;
+    int h = Globals::fontSize / 2;
     float vertices[2][2] = {
         {x, y + h},
         {x, y - h}};
