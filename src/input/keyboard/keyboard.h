@@ -11,8 +11,6 @@ class KeyboardHandler
 public:
     static void CharCallback(GLFWwindow *window, unsigned int codepoint);
     static void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
-
-private:
 };
 
 #endif
