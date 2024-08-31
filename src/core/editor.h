@@ -15,11 +15,14 @@ class Editor
 public:
     Editor(unsigned int width = Globals::scrWidth, unsigned int height = Globals::scrHeight);
     void SetCallbacks(GLFWwindow *window);
-    void SetCursorActive(bool active);
+    // renders via grid to coordinate conversion with top-left being (0,0)
     void Render();
+    // triggers cursor blinking state, true = non blinking
+    void SetCursorActive(bool active);
     glm::vec2 GridToInt(glm::vec2 gridPos);
     std::vector<std::string> textArr;
-    glm::vec2 cursorloc = glm::vec2(0, 0);
+    // cursor starts at grid pos 0,0
+    glm::vec2 cursorloc;
     CursorRenderer cursorRenderer;
     TextRenderer textRenderer;
 
