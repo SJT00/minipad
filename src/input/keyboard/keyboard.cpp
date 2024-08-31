@@ -6,10 +6,7 @@ void KeyboardHandler::CharCallback(GLFWwindow *window, unsigned int codepoint)
 {
     Editor *handler = (Editor *)glfwGetWindowUserPointer(window);
     char latestChar = (char)codepoint;
-    handler->textArr[handler->cursorloc[1]] += latestChar;
-    // get char specific advance
-    Character lastChar = handler->textRenderer.Characters[(char)codepoint];
-    // lastChar.Advance >> 6;
+    handler->textArr[handler->cursorloc[1]].insert(handler->cursorloc[0], 1, latestChar);
     handler->cursorloc[0] += 1;
 }
 
@@ -22,15 +19,10 @@ void KeyboardHandler::KeyCallback(GLFWwindow *window, int key, int scancode, int
         handler->SetCursorActive(true);
         if (key == GLFW_KEY_RIGHT && handler->cursorloc[0] < handler->textArr[handler->cursorloc[1]].size())
         {
-            // char c = handler->textArr[handler->cursorloc[1]][handler->cursorloc[0]+1];
-            // Character cChar = handler->textRenderer.Characters[c];
-            // handler->cursorloc[0] += cChar.Advance >> 6;
-             handler->cursorloc[0] += 1;
+            handler->cursorloc[0] += 1;
         }
         if (key == GLFW_KEY_LEFT && handler->cursorloc[0] > 0)
         {
-            // char c = handler->textArr[handler->cursorloc[1]][handler->cursorloc[0]-1];
-            // Character cChar = handler->textRenderer.Characters[c];
             handler->cursorloc[0] -= 1;
         }
         if (key == GLFW_KEY_UP && handler->cursorloc[1] > 0)
@@ -41,10 +33,16 @@ void KeyboardHandler::KeyCallback(GLFWwindow *window, int key, int scancode, int
         {
             handler->cursorloc[1] += 1;
         }
-        if (key == GLFW_KEY_ENTER){
+        if (key == GLFW_KEY_ENTER)
+        {
             handler->textArr[handler->cursorloc[1]].append("\n");
             handler->cursorloc[0] = 0;
             handler->cursorloc[1] += 1;
+        }
+        if (key == GLFW_KEY_BACKSPACE && handler->cursorloc[0] > 0)
+        {
+            handler->textArr[handler->cursorloc[1]].erase(handler->cursorloc[0] - 1, 1);
+            handler->cursorloc[0] -= 1;
         }
     }
     else
