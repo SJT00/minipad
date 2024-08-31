@@ -63,7 +63,7 @@ void Editor::Render()
 
                 if (cursorloc[0] > cols)
                 {
-                    cursorloc[0] = 0;
+                    cursorloc[0] = currentRow.size() - cols;
                     cursorloc[1] += 1;
                 }
             }
