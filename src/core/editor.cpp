@@ -27,6 +27,7 @@ glm::vec2 Editor::GridToInt(glm::vec2 gridPos)
     {
         returnVec[0] = Globals::padding;
         returnVec[1] += 1;
+        return returnVec;
     }
     if (gridPos[1] > this->rows)
     {
@@ -53,6 +54,19 @@ void Editor::Render()
     {
         while (textArr[lastRow].size() != 0 && lastRow < rows)
         {
+            std::string currentRow = textArr[cursorloc[1]];
+            if (currentRow.size() > cols)
+            {
+                textArr[cursorloc[1] + 1].insert(0, currentRow.substr(cols));
+                textArr[cursorloc[1]].erase(cols);
+                // textArr.insert(textArr.begin() + cursorloc[1] + 1, nLine);
+
+                if (cursorloc[0] > cols)
+                {
+                    cursorloc[0] = 0;
+                    cursorloc[1] += 1;
+                }
+            }
             lastRow += 1;
         }
     }

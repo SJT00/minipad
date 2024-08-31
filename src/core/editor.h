@@ -25,11 +25,11 @@ public:
     glm::vec2 cursorloc;
     CursorRenderer cursorRenderer;
     TextRenderer textRenderer;
+    int cols = (Globals::scrWidth - 2 * Globals::padding) / (Globals::fontWidth);
 
 private:
     KeyboardHandler keyboardHandler;
     int rows = (Globals::scrHeight - Globals::padding) / (Globals::fontSize + Globals::lineSpacing);
-    int cols = (Globals::scrWidth - Globals::padding) / (Globals::fontWidth);
 };
 
 #endif

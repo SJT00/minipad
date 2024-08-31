@@ -16,7 +16,7 @@ namespace Globals
     unsigned int padding = 15;
     unsigned int lineSpacing = 6;
     unsigned int fontSize = 14;
-    unsigned int fontWidth = 6;
+    unsigned int fontWidth = 8;
 }
 
 int main()
