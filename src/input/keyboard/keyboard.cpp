@@ -35,7 +35,7 @@ void KeyboardHandler::KeyCallback(GLFWwindow *window, int key, int scancode, int
         }
         if (key == GLFW_KEY_ENTER)
         {
-            handler->textArr[handler->cursorloc[1]].append("\n");
+            handler->textArr[handler->cursorloc[1]].insert(handler->cursorloc[0], 1, '\n');
             handler->cursorloc[0] = 0;
             handler->cursorloc[1] += 1;
         }
