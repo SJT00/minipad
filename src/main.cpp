@@ -19,8 +19,16 @@ namespace Globals
     unsigned int fontWidth = 8;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+    if (argc > 1)
+    {
+        std::cout << "File provided: " << argv[1] << std::endl;
+    }
+    else
+    {
+        std::cout << "No Files provided." << std::endl;
+    }
     // glfw: initialize and configure
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
