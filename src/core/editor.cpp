@@ -23,6 +23,12 @@ glm::vec2 Editor::GridToInt(glm::vec2 gridPos)
 {
     // set to top left col/row
     glm::vec2 returnVec = glm::vec2(Globals::padding, Globals::padding);
+    if (gridPos[0] < 0 ||gridPos[1] < 0 )
+    {
+        returnVec[0] = Globals::padding;
+        returnVec[1] = Globals::padding;
+        return returnVec;
+    }
     if (gridPos[0] > this->cols)
     {
         returnVec[0] = Globals::padding;
