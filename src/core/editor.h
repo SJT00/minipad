@@ -10,6 +10,20 @@
 #include "../renderer/cursor/cursor.h"
 #include "../input/keyboard/keyboard.h"
 
+struct Pieces
+{
+    unsigned int start;
+    unsigned int length;
+    const std::string source;
+};
+
+struct PieceTable
+{
+    std::string originalBuffer;
+    std::string add;
+    Pieces piece[1];
+};
+
 class Editor
 {
 public:
@@ -21,6 +35,7 @@ public:
     void SetCursorActive(bool active);
     glm::vec2 GridToInt(glm::vec2 gridPos);
     std::vector<std::string> textArr;
+    PieceTable pieceTable;
     // cursor starts at grid pos 0,0
     glm::vec2 cursorloc;
     CursorRenderer cursorRenderer;
