@@ -30,7 +30,7 @@ public:
     Editor(unsigned int width = Globals::scrWidth, unsigned int height = Globals::scrHeight);
     void SetCallbacks(GLFWwindow *window);
     // renders via grid to coordinate conversion with top-left being (0,0)
-    void Render();
+    void Render();// got sick so no updates td
     // triggers cursor blinking state, true = non blinking
     void SetCursorActive(bool active);
     glm::vec2 GridToInt(glm::vec2 gridPos);
