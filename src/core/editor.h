@@ -25,7 +25,7 @@ struct PieceTable
 };
 
 class Editor
-{// still stick
+{
 public:
     Editor(unsigned int width = Globals::scrWidth, unsigned int height = Globals::scrHeight);
     void SetCallbacks(GLFWwindow *window);
