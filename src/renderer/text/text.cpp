@@ -3,6 +3,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "../shader.h"
 
+#include <iostream>
+
 TextRenderer::TextRenderer(unsigned int width, unsigned int height)
     : TextShader("./src/renderer/text/shaders/text_2d.vs", "./src/renderer/text/shaders/text_2d.fs")
 {

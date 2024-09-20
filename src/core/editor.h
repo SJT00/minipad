@@ -10,11 +10,15 @@
 #include "../renderer/cursor/cursor.h"
 #include "../input/keyboard/keyboard.h"
 
+enum sourceType {
+    original,
+    add
+};
 struct Pieces
 {
     unsigned int start;
     unsigned int length;
-    const std::string source;
+    const sourceType source;
 };
 
 struct PieceTable
@@ -35,7 +39,7 @@ public:
     void SetCursorActive(bool active);
     glm::vec2 GridToInt(glm::vec2 gridPos);
     std::vector<std::string> textArr;
-    PieceTable pieceTable;
+    // PieceTable pieceTable;
     // cursor starts at grid pos 0,0
     glm::vec2 cursorloc;
     CursorRenderer cursorRenderer;
