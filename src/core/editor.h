@@ -10,7 +10,7 @@
 #include "../renderer/cursor/cursor.h"
 #include "../input/keyboard/keyboard.h"
 
-enum sourceType {// continued flu
+enum sourceType {
     original,
     add
 };
