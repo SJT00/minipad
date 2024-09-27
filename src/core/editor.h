@@ -29,7 +29,7 @@ struct PieceTable
 };
 
 class Editor
-{ // and sickness continues
+{
 public:
     Editor(unsigned int width = Globals::scrWidth, unsigned int height = Globals::scrHeight);
     void SetCallbacks(GLFWwindow *window);
