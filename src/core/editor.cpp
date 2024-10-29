@@ -40,6 +40,7 @@ glm::vec2 Editor::GridToInt(glm::vec2 gridPos)
         throw std::runtime_error("Rows out of bound");
     }
 
+    // Get width of all previously typed characters on line
     unsigned int adv = 0;
     for (int chars = 0; chars < gridPos[0]; chars++)
     {
@@ -65,7 +66,6 @@ void Editor::Render()
             {
                 textArr[cursorloc[1] + 1].insert(0, currentRow.substr(cols));
                 textArr[cursorloc[1]].erase(cols);
-                // textArr.insert(textArr.begin() + cursorloc[1] + 1, nLine);
 
                 if (cursorloc[0] > cols)
                 {
