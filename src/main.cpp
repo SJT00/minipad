@@ -21,9 +21,11 @@ namespace Globals
 
 int main(int argc, char *argv[])
 {
+    char *fileName = "";
     if (argc > 1)
     {
         std::cout << "File provided: " << argv[1] << std::endl;
+        fileName = argv[1];
     }
     else
     {
@@ -63,7 +65,7 @@ int main(int argc, char *argv[])
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Editor editor;
+    Editor editor(Globals::scrWidth, Globals::scrHeight, fileName);
     editor.SetCallbacks(window);
 
     // main: render loop

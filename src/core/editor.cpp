@@ -1,10 +1,21 @@
 #include "editor.h"
 
-Editor::Editor(unsigned int width, unsigned int height)
+Editor::Editor(unsigned int &width, unsigned int &height, const char *fname)
     : cursorRenderer(), textRenderer()
 {
+    this->LoadFile(fname);
     this->textRenderer.Load("./assets/fonts/Futura.ttf", Globals::fontSize);
     this->textArr.resize(static_cast<size_t>(this->rows));
+}
+
+void Editor::LoadFile(const char *fname)
+{
+    // this->fptr = fopen();
+}
+
+void Editor::OnClose()
+{
+    fclose(this->fptr);
 }
 
 void Editor::SetCallbacks(GLFWwindow *window)
@@ -23,7 +34,7 @@ glm::vec2 Editor::GridToInt(glm::vec2 gridPos)
 {
     // set to top left col/row
     glm::vec2 returnVec = glm::vec2(Globals::padding, Globals::padding);
-    if (gridPos[0] < 0 ||gridPos[1] < 0 )
+    if (gridPos[0] < 0 || gridPos[1] < 0)
     {
         returnVec[0] = Globals::padding;
         returnVec[1] = Globals::padding;
