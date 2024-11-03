@@ -29,11 +29,13 @@ struct PieceTable
     Pieces piece[1];
 };
 
+// Need to change structure of this class, who owns render responsibility, keyboard responsibility etc.
+
 class Editor
 {
 public:
     Editor(unsigned int &width = Globals::scrWidth, unsigned int &height = Globals::scrHeight, const char *fname = "");
-    // Loads/Create File to be edited
+    // Loads/Create File on to memory
     void LoadFile(const char *fname);
     // OnClose Handler, cleanup ptrs and save
     void OnClose();
