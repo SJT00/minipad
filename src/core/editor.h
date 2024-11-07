@@ -30,6 +30,7 @@ struct PieceTable
 };
 
 // Need to change structure of this class, who owns render responsibility, keyboard responsibility etc.
+// Will look into it later
 
 class Editor
 {
