@@ -100,7 +100,7 @@ void TextRenderer::RenderText(
 
         if (*c == '\n')
         {
-            y -= Globals::FONTSIZE + Globals::LINESPACING;
+            y += Globals::FONTSIZE + Globals::LINESPACING;
             x = Globals::PADDING;
             continue;
         }
