@@ -7,7 +7,7 @@ Editor::Editor(unsigned int width, unsigned int height, std::string fname)
 
 void Editor::SetCallbacks(GLFWwindow *window)
 {
-    glfwSetWindowUserPointer(window, this);
+    glfwSetWindowUserPointer(window, this); // Pointer used for external manipulation of editor by keyboardHandler
     glfwSetCharCallback(window, keyboardHandler.CharCallback);
     glfwSetKeyCallback(window, keyboardHandler.KeyCallback);
 }
@@ -34,14 +34,21 @@ void Editor::MoveCursor(Direction dir)
     }
 }
 
-void Editor::ScrollX(unsigned int dir)
+void Editor::Scroll(Direction dir)
 {
-    this->textRenderer.scrollOffsetX += dir;
-}
-
-void Editor::ScrollY(unsigned int dir)
-{
-    this->textRenderer.scrollOffsetY += dir;
+    switch (dir)
+    {
+    case Direction::right:
+        break;
+    case Direction::left:
+        break;
+    case Direction::up:
+        break;
+    case Direction::down:
+        break;
+    default:
+        break;
+    }
 }
 
 void Editor::InsertText(const std::string &text)

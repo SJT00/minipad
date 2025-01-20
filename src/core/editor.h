@@ -41,8 +41,7 @@ public:
     void InsertText(const std::string &text);
     void DeleteText(unsigned int length);
 
-    void ScrollX(unsigned int dir);
-    void ScrollY(unsigned int dir);
+    void Scroll(Direction dir);
 
 private:
     FILE *fptr;
