@@ -21,3 +21,8 @@ void PieceTable::Delete(unsigned int index, unsigned int length)
 string PieceTable::getContent() const
 {
 }
+
+char *PieceTable::getCharAt(unsigned int index) const
+{
+    
+}

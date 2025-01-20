@@ -27,6 +27,7 @@ public:
     void Insert(unsigned int index, const std::string &text);
     void Delete(unsigned int index, unsigned int length);
     std::string getContent() const;
+    char *getCharAt(unsigned int index) const;
 
 private:
     std::string originalBuffer;
