@@ -9,19 +9,9 @@
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
-namespace Globals
-{
-    unsigned int scrWidth = 800;
-    unsigned int scrHeight = 600;
-    unsigned int padding = 15;
-    unsigned int lineSpacing = 6;
-    unsigned int fontSize = 14;
-    unsigned int fontWidth = 8;
-}
-
 int main(int argc, char *argv[])
 {
-    char *fileName = "";
+    std::string fileName = "";
     if (argc > 1)
     {
         std::cout << "File provided: " << argv[1] << std::endl;
@@ -40,7 +30,7 @@ int main(int argc, char *argv[])
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 #endif
 
-    GLFWwindow *window = glfwCreateWindow(Globals::scrWidth, Globals::scrHeight, "Minipad", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(Globals::SCR_WIDTH, Globals::SCR_HEIGHT, "Minipad", NULL, NULL);
 
     if (window == NULL)
     {
@@ -65,7 +55,7 @@ int main(int argc, char *argv[])
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Editor editor(Globals::scrWidth, Globals::scrHeight, fileName);
+    Editor editor(Globals::SCR_WIDTH, Globals::SCR_HEIGHT, fileName);
     editor.SetCallbacks(window);
 
     // main: render loop

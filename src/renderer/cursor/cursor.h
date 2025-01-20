@@ -10,7 +10,7 @@ class CursorRenderer
 {
 public:
     Shader CursorShader;
-    CursorRenderer(unsigned int width = Globals::scrWidth, unsigned int height= Globals::scrHeight);
+    CursorRenderer(unsigned int width = Globals::SCR_WIDTH, unsigned int height= Globals::SCR_HEIGHT);
     void RenderCursor(float x, float y, glm::vec3 color = glm::vec3(1.0f));
     bool active = false;
 
