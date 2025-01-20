@@ -39,6 +39,6 @@ void Editor::DeleteText(unsigned int length)
 
 void Editor::Render()
 {
-    this->textRenderer.RenderText("asmdklasmdklsamdklmaslkmd", Globals::PADDING, Globals::VIEWPORT.TOP);
+    this->textRenderer.RenderText("first line\nsecond line", Globals::PADDING, Globals::VIEWPORT.TOP);
     this->cursorRenderer.RenderCursor(cursor.x, cursor.y);
 }
