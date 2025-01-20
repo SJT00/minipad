@@ -14,7 +14,7 @@ void Editor::SetCallbacks(GLFWwindow *window)
 
 void Editor::SetCursorActive(bool active)
 {
-    this->cursor.active = active;
+    this->cursorRenderer.active = active;
 }
 
 void Editor::ScrollX(unsigned int dir)

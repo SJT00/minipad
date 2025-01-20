@@ -16,7 +16,6 @@ struct Cursor
     unsigned int offset;
     unsigned int x;
     unsigned int y;
-    bool active;
 };
 
 class Editor
@@ -42,7 +41,7 @@ private:
     TextRenderer textRenderer;
     KeyboardHandler keyboardHandler;
     PieceTable pieceTable;
-    Cursor cursor = {.offset = 0, .x = Globals::VIEWPORT.LEFT, .y = Globals::VIEWPORT.TOP, .active = false};
+    Cursor cursor = {.offset = 0, .x = Globals::VIEWPORT.LEFT, .y = Globals::VIEWPORT.TOP};
     int cols = (Globals::VIEWPORT.WIDTH) / (Globals::FONTWIDTH);
     int rows = (Globals::VIEWPORT.HEIGHT) / (Globals::FONTSIZE + Globals::LINESPACING);
 };
