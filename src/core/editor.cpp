@@ -1,21 +1,8 @@
 #include "editor.h"
 
-Editor::Editor(unsigned int &width, unsigned int &height, const char *fname)
-    : cursorRenderer(), textRenderer()
+Editor::Editor(unsigned int width, unsigned int height, std::string fname)
+    : cursorRenderer(width, height), textRenderer(width, height), pieceTable(fname)
 {
-    this->LoadFile(fname);
-    this->textRenderer.Load("./assets/fonts/Futura.ttf", Globals::fontSize);
-    this->textArr.resize(static_cast<size_t>(this->rows));
-}
-
-void Editor::LoadFile(const char *fname)
-{
-    // this->fptr = fopen();
-}
-
-void Editor::OnClose()
-{
-    fclose(this->fptr);
 }
 
 void Editor::SetCallbacks(GLFWwindow *window)
@@ -27,70 +14,31 @@ void Editor::SetCallbacks(GLFWwindow *window)
 
 void Editor::SetCursorActive(bool active)
 {
-    this->cursorRenderer.active = active;
+    this->cursor.active = active;
 }
 
-glm::vec2 Editor::GridToInt(glm::vec2 gridPos)
+void Editor::ScrollX(unsigned int dir)
 {
-    // set to top left col/row
-    glm::vec2 returnVec = glm::vec2(Globals::padding, Globals::padding);
-    if (gridPos[0] < 0 || gridPos[1] < 0)
-    {
-        returnVec[0] = Globals::padding;
-        returnVec[1] = Globals::padding;
-        return returnVec;
-    }
-    if (gridPos[0] > this->cols)
-    {
-        returnVec[0] = Globals::padding;
-        returnVec[1] += 1;
-        return returnVec;
-    }
-    if (gridPos[1] > this->rows)
-    {
-        throw std::runtime_error("Rows out of bound");
-    }
+    this->textRenderer.scrollOffsetX += dir;
+}
 
-    // Get width of all previously typed characters on line
-    unsigned int adv = 0;
-    for (int chars = 0; chars < gridPos[0]; chars++)
-    {
-        char c = this->textArr[gridPos[1]][chars];
-        Character cChar = this->textRenderer.Characters[c];
-        adv += cChar.Advance >> 6;
-    }
-    returnVec[0] = Globals::padding + adv;
-    returnVec[1] = Globals::padding + gridPos[1] * (Globals::fontSize + Globals::lineSpacing);
-    return returnVec;
+void Editor::ScrollY(unsigned int dir)
+{
+    this->textRenderer.scrollOffsetY += dir;
+}
+
+void Editor::InsertText(const std::string &text)
+{
+    pieceTable.Insert(cursor.offset, text);
+}
+
+void Editor::DeleteText(unsigned int length)
+{
+    pieceTable.Delete(cursor.offset, length);
 }
 
 void Editor::Render()
 {
-    glm::vec2 cursorVec = GridToInt(this->cursorloc);
-    int lastRow = 0;
-    if (textArr[0].size() > 0)
-    {
-        while (textArr[lastRow].size() != 0 && lastRow < rows)
-        {
-            std::string currentRow = textArr[cursorloc[1]];
-            if (currentRow.size() > cols)
-            {
-                textArr[cursorloc[1] + 1].insert(0, currentRow.substr(cols));
-                textArr[cursorloc[1]].erase(cols);
-
-                if (cursorloc[0] > cols)
-                {
-                    cursorloc[0] = currentRow.size() - cols;
-                    cursorloc[1] += 1;
-                }
-            }
-            lastRow += 1;
-        }
-    }
-    for (int r = 0; r <= lastRow; r++)
-    {
-        glm::vec2 textVec = GridToInt(glm::vec2(0, r));
-        this->textRenderer.RenderText(this->textArr[r], textVec[0], textVec[1]);
-    }
-    this->cursorRenderer.RenderCursor(cursorVec[0], cursorVec[1]);
+    this->textRenderer.RenderText("asmdklasmdklsamdklmaslkmd", Globals::PADDING, Globals::VIEWPORT.TOP);
+    this->cursorRenderer.RenderCursor(cursor.x, cursor.y);
 }

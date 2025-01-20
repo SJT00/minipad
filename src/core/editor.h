@@ -9,56 +9,42 @@
 #include "../renderer/text/text.h"
 #include "../renderer/cursor/cursor.h"
 #include "../input/keyboard/keyboard.h"
+#include "./piecetable.h"
 
-enum sourceType
+struct Cursor
 {
-    original,
-    add
+    unsigned int offset;
+    unsigned int x;
+    unsigned int y;
+    bool active;
 };
-struct Pieces
-{
-    unsigned int start;
-    unsigned int length;
-    const sourceType source;
-};
-
-struct PieceTable
-{
-    std::string originalBuffer;
-    std::string add;
-    Pieces piece[1];
-};
-
-// Need to change structure of this class, who owns render responsibility, keyboard responsibility etc.
 
 class Editor
 {
 public:
-    Editor(unsigned int &width = Globals::scrWidth, unsigned int &height = Globals::scrHeight, const char *fname = "");
-    // Loads/Create File on to memory
-    void LoadFile(const char *fname);
-    // OnClose Handler, cleanup ptrs and save
-    void OnClose();
+    Editor(unsigned int width = Globals::SCR_WIDTH, unsigned int height = Globals::SCR_HEIGHT, std::string fname = "");
     // Set various Keypress and Mouse movement callbacks
     void SetCallbacks(GLFWwindow *window);
-    // renders via grid to coordinate conversion with top-left being (0,0)
+    // Renders via grid to coordinate conversion with top-left being (0,0)
     void Render();
-    // triggers cursor blinking state, true = non blinking
+    // Triggers cursor blinking state, true = non blinking
     void SetCursorActive(bool active);
 
-    glm::vec2 GridToInt(glm::vec2 gridPos);
-    std::vector<std::string> textArr;
-    // PieceTable pieceTable;
-    // cursor starts at grid pos 0,0
-    glm::vec2 cursorloc;
-    CursorRenderer cursorRenderer;
-    TextRenderer textRenderer;
+    void InsertText(const std::string &text);
+    void DeleteText(unsigned int length);
+
+    void ScrollX(unsigned int dir);
+    void ScrollY(unsigned int dir);
 
 private:
     FILE *fptr;
+    CursorRenderer cursorRenderer;
+    TextRenderer textRenderer;
     KeyboardHandler keyboardHandler;
-    int cols = (Globals::scrWidth - 2 * Globals::padding) / (Globals::fontWidth);
-    int rows = (Globals::scrHeight - Globals::padding) / (Globals::fontSize + Globals::lineSpacing);
+    PieceTable pieceTable;
+    Cursor cursor = {.offset = 0, .x = Globals::VIEWPORT.LEFT, .y = Globals::VIEWPORT.TOP, .active = false};
+    int cols = (Globals::VIEWPORT.WIDTH) / (Globals::FONTWIDTH);
+    int rows = (Globals::VIEWPORT.HEIGHT) / (Globals::FONTSIZE + Globals::LINESPACING);
 };
 
 #endif
