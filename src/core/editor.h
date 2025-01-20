@@ -18,6 +18,14 @@ struct Cursor
     unsigned int y;
 };
 
+enum Direction
+{
+    up,
+    down,
+    left,
+    right
+};
+
 class Editor
 {
 public:
@@ -28,6 +36,7 @@ public:
     void Render();
     // Triggers cursor blinking state, true = non blinking
     void SetCursorActive(bool active);
+    void MoveCursor(Direction dir);
 
     void InsertText(const std::string &text);
     void DeleteText(unsigned int length);

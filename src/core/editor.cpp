@@ -17,6 +17,23 @@ void Editor::SetCursorActive(bool active)
     this->cursorRenderer.active = active;
 }
 
+void Editor::MoveCursor(Direction dir)
+{
+    switch (dir)
+    {
+    case Direction::right:
+        break;
+    case Direction::left:
+        break;
+    case Direction::up:
+        break;
+    case Direction::down:
+        break;
+    default:
+        break;
+    }
+}
+
 void Editor::ScrollX(unsigned int dir)
 {
     this->textRenderer.scrollOffsetX += dir;
