@@ -6,8 +6,8 @@ void KeyboardHandler::CharCallback(GLFWwindow *window, unsigned int codepoint)
 {
     Editor *handler = (Editor *)glfwGetWindowUserPointer(window);
     char latestChar = (char)codepoint;
-    handler->textArr[handler->cursorloc[1]].insert(handler->cursorloc[0], 1, latestChar);
-    handler->cursorloc[0] += 1;
+    // Per character piece table modification
+    handler->InsertText(&latestChar);
 }
 
 // write a function to go to last char when moving vertically
@@ -21,64 +21,30 @@ void KeyboardHandler::KeyCallback(GLFWwindow *window, int key, int scancode, int
         handler->SetCursorActive(true);
         if (key == GLFW_KEY_RIGHT)
         {
-            const float lastItm = handler->textArr[handler->cursorloc[1]].size();
-            if (handler->cursorloc[0] < lastItm)
-            {
-                handler->cursorloc[0] += 1;
-            }
-
-            else if (handler->cursorloc[0] == lastItm && handler->textArr[handler->cursorloc[1] + 1].size() > 0)
-            {
-                handler->cursorloc[0] = 0;
-                handler->cursorloc[1] += 1;
-            }
+            // Move cursor right
+            // Go to next line
         }
         if (key == GLFW_KEY_LEFT)
         {
-            if (handler->cursorloc[0] > 0)
-            {
-                handler->cursorloc[0] -= 1;
-            }
-
-            else if (handler->cursorloc[0] == 0 && handler->cursorloc[1] > 0)
-            {
-                handler->cursorloc[0] = handler->textArr[handler->cursorloc[1] - 1].size();
-                handler->cursorloc[1] -= 1;
-            }
+            // Move cursor left
+            // Go to prev line
         }
-        if (key == GLFW_KEY_UP && handler->cursorloc[1] > 0)
+        if (key == GLFW_KEY_UP)
         {
-            if (handler->textArr[handler->cursorloc[1] - 1].size() < handler->cursorloc[0])
-            {
-                handler->cursorloc[0] = handler->textArr[handler->cursorloc[1] - 1].size();
-            }
-            handler->cursorloc[1] -= 1;
+            // Move one up if allowed, move to eol or same column equivalent
         }
-        if (key == GLFW_KEY_DOWN && handler->textArr[handler->cursorloc[1] + 1].size() > 0)
+        if (key == GLFW_KEY_DOWN)
         {
-            if (handler->textArr[handler->cursorloc[1] + 1].size() < handler->cursorloc[0])
-            {
-                handler->cursorloc[0] = handler->textArr[handler->cursorloc[1] + 1].size();
-            }
-            handler->cursorloc[1] += 1;
+            // Move one down if allowed, move to eol or same column equivalent
         }
         if (key == GLFW_KEY_ENTER)
         {
-            handler->cursorloc[0] = 0;
-            handler->cursorloc[1] += 1;
+            // Insert new line character move appropriately
         }
         if (key == GLFW_KEY_BACKSPACE)
         {
-            if (handler->cursorloc[0] == 0 && handler->cursorloc[1] > 0)
-            {
-                handler->cursorloc[0] = handler->textArr[handler->cursorloc[1] - 1].size();
-                handler->cursorloc[1] -= 1;
-            }
-            else if (handler->cursorloc[0] > 0)
-            {
-                handler->textArr[handler->cursorloc[1]].erase(handler->cursorloc[0] - 1, 1);
-                handler->cursorloc[0] -= 1;
-            }
+            // Delete from previous line if at first column and prev exists, move up and left
+            // Delete from same line if text exists, move left
         }
     }
     else

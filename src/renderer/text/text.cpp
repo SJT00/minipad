@@ -20,9 +20,11 @@ TextRenderer::TextRenderer(unsigned int width, unsigned int height)
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    this->Load();
 }
 
-void TextRenderer::Load(std::string font, unsigned int fontSize)
+void TextRenderer::Load(std::string fontSrc, unsigned int fontSize)
 {
     this->Characters.clear();
     // FreeType: initialize and load
@@ -33,7 +35,7 @@ void TextRenderer::Load(std::string font, unsigned int fontSize)
     }
 
     FT_Face face;
-    if (FT_New_Face(ft, font.c_str(), 0, &face))
+    if (FT_New_Face(ft, fontSrc.c_str(), 0, &face))
     {
         printf("ERROR::FREETYPE: Failed to load font\n");
     }
@@ -96,10 +98,27 @@ void TextRenderer::RenderText(
     {
         Character ch = Characters[*c];
 
-        float xpos = x + ch.Bearing.x * scale;
-        float ypos = y + (ch.Size.y - ch.Bearing.y) * scale;
+        if (*c == '\n')
+        {
+            y -= Globals::FONTSIZE + Globals::LINESPACING;
+            x = Globals::PADDING;
+            continue;
+        }
+
+        float xpos = x + ch.Bearing.x * scale + scrollOffsetX;
+        float ypos = y + (ch.Size.y - ch.Bearing.y) * scale - scrollOffsetY;
         float w = ch.Size.x * scale;
         float h = ch.Size.y * scale;
+
+        // Outside Viewport
+        // if (ypos < Globals::VIEWPORT.TOP || ypos > Globals::VIEWPORT.BOTTOM || xpos < Globals::VIEWPORT.LEFT || xpos > Globals::VIEWPORT.RIGHT)
+        // {
+        //     std::cout<<"ypos+h: "<<ypos<<" h: "<<h<<std::endl;
+        //     std::cout<<"ypos-h: "<<ypos<<" h: "<<h<<std::endl;
+        //     std::cout<<"xpos-w: "<<xpos<<" w: "<<w<<std::endl;
+        //     std::cout<<"xpos+w: "<<xpos<<" w: "<<w<<std::endl;
+        //     continue;
+        // }
 
         float vertices[6][4] = {
             {xpos, ypos - h, 0.0f, 0.0f},

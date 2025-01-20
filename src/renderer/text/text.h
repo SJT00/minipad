@@ -22,11 +22,13 @@ class TextRenderer
 public:
     std::map<char, Character> Characters;
     Shader TextShader;
-    TextRenderer(unsigned int width = Globals::scrWidth, unsigned int height = Globals::scrHeight);
-    // gets and binds relevant font textures per char
-    void Load(std::string font, unsigned int fontSize);
-    // renders via precompiled characters map
+    TextRenderer(unsigned int width = Globals::SCR_WIDTH, unsigned int height = Globals::SCR_HEIGHT);
+    // Gets and binds relevant font textures per char
+    void Load(std::string fontSrc = Globals::FONTSRC, unsigned int fontSize = Globals::FONTSIZE);
+    // Renders via precompiled characters map
     void RenderText(std::string text, float x, float y, float scale = 1.0f, glm::vec3 color = glm::vec3(1.0f));
+    unsigned int scrollOffsetX = 0;
+    unsigned int scrollOffsetY = 0;
 
 private:
     // vtx arr obj and vtx buffer obj for render state
