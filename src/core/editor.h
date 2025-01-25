@@ -44,14 +44,14 @@ public:
     void Scroll(Direction dir);
 
 private:
-    FILE *fptr;
+    // FILE *fptr;
     CursorRenderer cursorRenderer;
     TextRenderer textRenderer;
     KeyboardHandler keyboardHandler;
     PieceTable pieceTable;
     Cursor cursor = {.offset = 0, .x = Globals::VIEWPORT.LEFT, .y = Globals::VIEWPORT.TOP};
-    int cols = (Globals::VIEWPORT.WIDTH) / (Globals::FONTWIDTH);
-    int rows = (Globals::VIEWPORT.HEIGHT) / (Globals::FONTSIZE + Globals::LINESPACING);
+    // int cols = (Globals::VIEWPORT.WIDTH) / (Globals::FONTWIDTH);
+    // int rows = (Globals::VIEWPORT.HEIGHT) / (Globals::FONTSIZE + Globals::LINESPACING);
 };
 
 #endif
