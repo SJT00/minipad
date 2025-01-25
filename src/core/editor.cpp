@@ -51,7 +51,7 @@ void Editor::Scroll(Direction dir)
     }
 }
 
-void Editor::InsertText(const std::string &text)
+void Editor::InsertText(const char *text)
 {
     pieceTable.Insert(cursor.offset, text);
 }

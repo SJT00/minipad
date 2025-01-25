@@ -38,7 +38,7 @@ public:
     void SetCursorActive(bool active);
     void MoveCursor(Direction dir);
 
-    void InsertText(const std::string &text);
+    void InsertText(const char* text);
     void DeleteText(unsigned int length);
 
     void Scroll(Direction dir);
