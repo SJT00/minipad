@@ -1,7 +1,7 @@
 #include "editor.h"
 
 Editor::Editor(unsigned int width, unsigned int height, std::string fname)
-    : cursorRenderer(width, height), textRenderer(width, height), pieceTable(fname)
+    : cursorRenderer(width, height), textRenderer(width, height), pieceTable()
 {
 }
 
@@ -63,6 +63,6 @@ void Editor::DeleteText(unsigned int length)
 
 void Editor::Render()
 {
-    this->textRenderer.RenderText("first line\nsecond line", Globals::PADDING, Globals::VIEWPORT.TOP);
+    this->textRenderer.RenderText(this->pieceTable.getContent(), Globals::PADDING, Globals::VIEWPORT.TOP);
     this->cursorRenderer.RenderCursor(cursor.x, cursor.y);
 }
