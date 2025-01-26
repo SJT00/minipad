@@ -32,15 +32,14 @@ public:
     string getContent() const;
     char getCharAt(unsigned int index) const;
     vector<unsigned int> getLineStarts(sourceType src, unsigned int start, unsigned int end) const;
-    vector<unsigned int> getLineStarts(string text, unsigned int tstart, unsigned int tsize) const;
 
 private:
     string originalBuffer;
     string addBuffer;
     vector<Piece> pieces;
-    Piece *currentPiece; // Utilized to prevent spamming new pieces when inserting to same middle piece
+    Piece *currentPiece; // Utilized to prevent spamming new pieces when middle modification
     unsigned int documentLength;
-    int lastDeletedIndex = -1;
+    int lastDeletedIndex = -1; // Prevents inclusion of deleted text
 };
 
 #endif
