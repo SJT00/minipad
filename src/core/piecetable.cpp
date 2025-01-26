@@ -11,17 +11,10 @@ PieceTable::PieceTable(const string &initialContent)
 {
     originalBuffer = initialContent;
     const unsigned int bufferSize = originalBuffer.size();
-    vector<unsigned int> lineStarts = {};
-    for (unsigned int index = 0; index < bufferSize; index++)
-    {
-        if (originalBuffer[index] == '\n')
-        {
-            lineStarts.push_back(index + 1);
-        }
-    }
+    vector<unsigned int> lineStarts = getLineStarts(sourceType::original, 0, bufferSize);
     pieces.push_back({sourceType::original, 0, static_cast<unsigned int>(initialContent.size()), lineStarts});
     documentLength = bufferSize;
-    currentPiece = nullptr;
+    currentPiece = &pieces.back();
 }
 
 void PieceTable::Insert(unsigned int index, const string &text)
@@ -34,7 +27,7 @@ void PieceTable::Insert(unsigned int index, const string &text)
     unsigned int tsize = text.size();
     addBuffer += text;
 
-    vector<unsigned int> newLineStarts = getLineStarts(text, documentLength, tsize);
+    vector<unsigned int> newLineStarts = getLineStarts(sourceType::add, documentLength, tsize);
 
     // No originalBuffer case
     if (pieces.empty())
@@ -300,22 +293,17 @@ char PieceTable::getCharAt(unsigned int index) const
     return '\0';
 }
 
-vector<unsigned int> PieceTable::getLineStarts(sourceType src, unsigned int start, unsigned int len) const
+vector<unsigned int> PieceTable::getLineStarts(sourceType src, unsigned int start, unsigned int end) const
 {
     string text = src == sourceType::original
-                      ? originalBuffer.substr(start, len)
-                      : addBuffer.substr(start, len);
-    return getLineStarts(text, start, len);
-}
-
-vector<unsigned int> PieceTable::getLineStarts(string text, unsigned int tstart, unsigned int tsize) const
-{
+                      ? originalBuffer.substr(start, end)
+                      : addBuffer.substr(start, end);
     vector<unsigned int> lineStarts = {};
-    for (unsigned int index = 0; index < tsize; index++)
+    for (unsigned int index = 0; index < end; index++)
     {
         if (text[index] == '\n')
         {
-            lineStarts.push_back(tstart + index + 1);
+            lineStarts.push_back(start + index + 1);
         }
     }
     return lineStarts;
