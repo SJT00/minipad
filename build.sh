@@ -16,17 +16,11 @@ cd "$BUILD_DIR"
 
 # Run CMake
 echo "Running CMake..."
-if [ "$1" == "-db" ]; then
-    echo "Created Xcode project for debugging."
-    cmake -G Xcode ..
-else
-    # Need to add a check for xcode proj here to delete that build and redo
-    echo "Default generator running."
-    cmake ..
+cmake ..
 
-    # Make binary
-    echo "Running Make..."
-    make
-fi
+# Make binary
+echo "Running Make..."
+make
+
 
 
