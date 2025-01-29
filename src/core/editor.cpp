@@ -1,7 +1,7 @@
 #include "editor.h"
 
 Editor::Editor(unsigned int width, unsigned int height, std::string fname)
-    : cursorRenderer(width, height), textRenderer(width, height), pieceTable()
+    : cursorRenderer(width, height), textRenderer(width, height, &cursor), pieceTable("")
 {
 }
 
@@ -22,8 +22,16 @@ void Editor::MoveCursor(Direction dir)
     switch (dir)
     {
     case Direction::right:
+        if (cursor.offset < pieceTable.documentLength)
+        {
+            cursor.offset++;
+        }
         break;
     case Direction::left:
+        if (cursor.offset > 0)
+        {
+            cursor.offset--;
+        }
         break;
     case Direction::up:
         break;
@@ -53,16 +61,20 @@ void Editor::Scroll(Direction dir)
 
 void Editor::InsertText(const char *text)
 {
+    cout << "Cursor.offset: " << cursor.offset << endl;
     pieceTable.Insert(cursor.offset, text);
 }
 
 void Editor::DeleteText(unsigned int length)
 {
-    pieceTable.Delete(cursor.offset, length);
+    if (cursor.offset > 0)
+    {
+        pieceTable.Delete(cursor.offset, length);
+    }
 }
 
 void Editor::Render()
 {
-    this->textRenderer.RenderText(this->pieceTable.getContent(), Globals::PADDING, Globals::VIEWPORT.TOP);
+    this->textRenderer.RenderText(this->pieceTable.GetContent(), Globals::PADDING, Globals::VIEWPORT.TOP);
     this->cursorRenderer.RenderCursor(cursor.x, cursor.y);
 }
