@@ -147,7 +147,7 @@ Piece *PieceTable::GetActivePiece(unsigned int index)
                 break;
             }
             unsigned int normalIndex = index - cumulativeLength;
-            if (normalIndex < piece.length && normalIndex >= piece.start)
+            if (normalIndex < piece.length)
             {
                 activePiece = {.cLen = cumulativeLength, .idx = currentIdx};
                 return &piece;
@@ -321,7 +321,7 @@ void PieceTable::Visualize()
          << setw(8) << activePiece.idx
          << setw(10) << (active.source == sourceType::original ? "Original" : "Added")
          << setw(10) << active.start
-         << setw(10) << active.length;
+         << setw(10) << activePiece.cLen;
 
     // Print line starts for the active piece
     cout << "[ ";
