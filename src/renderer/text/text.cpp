@@ -2,11 +2,12 @@
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include "../shader.h"
+#include "../../core/editor.h"
 
 #include <iostream>
 
-TextRenderer::TextRenderer(unsigned int width, unsigned int height)
-    : TextShader("./src/renderer/text/shaders/text_2d.vs", "./src/renderer/text/shaders/text_2d.fs")
+TextRenderer::TextRenderer(unsigned int width, unsigned int height, Cursor *cursor)
+    : TextShader("./src/renderer/text/shaders/text_2d.vs", "./src/renderer/text/shaders/text_2d.fs"), cursor(cursor)
 {
     this->TextShader.use();
     this->TextShader.setMat4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f));
@@ -94,6 +95,7 @@ void TextRenderer::RenderText(
     this->TextShader.setInt("text", 0);
 
     std::string::const_iterator c;
+    unsigned int documentOffset = 0;
     for (c = text.begin(); c != text.end(); c++)
     {
         Character ch = Characters[*c];
@@ -102,6 +104,12 @@ void TextRenderer::RenderText(
         {
             y += Globals::FONTSIZE + Globals::LINESPACING;
             x = Globals::PADDING;
+            documentOffset++;
+            if (documentOffset == this->cursor->offset)
+            {
+                this->cursor->x = x;
+                this->cursor->y = y;
+            }
             continue;
         }
 
@@ -137,6 +145,13 @@ void TextRenderer::RenderText(
 
         // Advance cursor for next char
         x += (ch.Advance >> 6) * scale;
+        documentOffset++;
+        if (documentOffset == this->cursor->offset)
+        {
+            // Give cursor render location
+            this->cursor->x = x;
+            this->cursor->y = y;
+        }
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);

@@ -9,6 +9,7 @@
 #include "../../globals.h"
 #include "../shader.h"
 
+struct Cursor;
 struct Character
 {
     unsigned int TextureID; // ID handle of the glyph texture
@@ -22,7 +23,7 @@ class TextRenderer
 public:
     std::map<char, Character> Characters;
     Shader TextShader;
-    TextRenderer(unsigned int width = Globals::SCR_WIDTH, unsigned int height = Globals::SCR_HEIGHT);
+    TextRenderer(unsigned int width = Globals::SCR_WIDTH, unsigned int height = Globals::SCR_HEIGHT, Cursor *cursor = nullptr);
     // Gets and binds relevant font textures per char
     void Load(std::string fontSrc = Globals::FONTSRC, unsigned int fontSize = Globals::FONTSIZE);
     // Renders via precompiled characters map
@@ -31,8 +32,10 @@ public:
     unsigned int scrollOffsetY = 0;
 
 private:
-    // vtx arr obj and vtx buffer obj for render state
+    // Vtx arr obj and vtx buffer obj for render state
     unsigned int VAO, VBO;
+    // Pointer to editors cursor obj used for rendering optimization
+    Cursor *cursor;
 };
 
 #endif
