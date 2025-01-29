@@ -100,6 +100,12 @@ void TextRenderer::RenderText(
     {
         Character ch = Characters[*c];
 
+        if (documentOffset == 0)
+        {
+            this->cursor->x = x;
+            this->cursor->y = y;
+        }
+
         if (*c == '\n')
         {
             y += Globals::FONTSIZE + Globals::LINESPACING;
