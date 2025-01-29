@@ -30,6 +30,8 @@ void PieceTable::Insert(unsigned int rawIndex, const string &text)
     addBuffer += text;
     unsigned int index = min(max(rawIndex, static_cast<unsigned int>(0)), documentLength);
     Piece *currentPiece = GetActivePiece(index);
+    if (currentPiece == nullptr)
+        out_of_range("No Current Piece Found");
     vector<unsigned int> lineStarts = GetLineStarts(sourceType::add, index, tsize);
 
     unsigned int normalizedIdx = index - activePiece.cLen;
@@ -153,9 +155,13 @@ Piece *PieceTable::GetActivePiece(unsigned int index)
             cumulativeLength += piece.length;
             currentIdx++;
         }
-        pieces.push_back({sourceType::add, documentLength, static_cast<unsigned int>(0), {}});
-        activePiece = {.cLen = cumulativeLength, .idx = currentIdx};
-        return &pieces.back();
+        if (pieces.empty() || index == documentLength)
+        {
+            pieces.push_back({sourceType::add, documentLength, static_cast<unsigned int>(0), {}});
+            activePiece = {.cLen = cumulativeLength, .idx = currentIdx};
+            return &pieces.back();
+        }
+        return nullptr;
     }
 }
 
@@ -305,7 +311,7 @@ void PieceTable::Visualize()
          << setw(8) << "Index"
          << setw(10) << "Source"
          << setw(10) << "Start"
-         << setw(10) << "Length"
+         << setw(10) << "CLen"
          << "Line Starts" << endl;
     cout << string(width, '-') << endl;
 
