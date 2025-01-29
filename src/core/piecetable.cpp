@@ -1,269 +1,98 @@
 #include "piecetable.h"
+#include <iostream>
+#include <iomanip>
 
 using namespace std;
 
-PieceTable::PieceTable()
-{
-    PieceTable("");
-}
+PieceTable::PieceTable() : PieceTable("") {}
 
 PieceTable::PieceTable(const string &initialContent)
 {
-    originalBuffer = initialContent;
-    const unsigned int bufferSize = originalBuffer.size();
-    vector<unsigned int> lineStarts = getLineStarts(sourceType::original, 0, bufferSize);
-    pieces.push_back({sourceType::original, 0, static_cast<unsigned int>(initialContent.size()), lineStarts});
+    const unsigned int bufferSize = initialContent.size();
+    vector<unsigned int> lineStarts = GetLineStarts(sourceType::original, 0, bufferSize);
+    if (bufferSize > 0)
+    {
+        pieces.push_back({sourceType::original, 0, static_cast<unsigned int>(bufferSize), lineStarts});
+        activePiece = {.cLen = 0, .idx = 0};
+    }
     documentLength = bufferSize;
-    currentPiece = &pieces.back();
+
+    Visualize();
 }
 
-void PieceTable::Insert(unsigned int index, const string &text)
+void PieceTable::Insert(unsigned int rawIndex, const string &text)
 {
-    if (index > documentLength)
-    {
-        throw out_of_range("Insert out of range");
-    }
-
     unsigned int tsize = text.size();
-    addBuffer += text;
-
-    vector<unsigned int> newLineStarts = getLineStarts(sourceType::add, documentLength, tsize);
-
-    // No originalBuffer case
-    if (pieces.empty())
+    if (tsize == 0)
     {
-        Piece newPiece = {sourceType::add, 0, tsize, newLineStarts};
-        pieces.push_back(newPiece);
-        documentLength += tsize;
-        currentPiece = &pieces.back();
         return;
     }
+    addBuffer += text;
+    unsigned int index = min(max(rawIndex, static_cast<unsigned int>(0)), documentLength);
+    Piece *currentPiece = GetActivePiece(index);
+    vector<unsigned int> lineStarts = GetLineStarts(sourceType::add, index, tsize);
 
-    // Appending but no current pointer is set yet case
-    if (index == documentLength)
+    unsigned int normalizedIdx = index - activePiece.cLen;
+    // Appending Case
+    if (normalizedIdx == currentPiece->length || currentPiece->length == 0)
     {
-        currentPiece = &pieces.back();
-    }
-
-    // Check if current piece can be directly used
-    if (currentPiece != nullptr &&
-        index >= currentPiece->start &&
-        index <= (currentPiece->start + currentPiece->length))
-    {
-        // Extend current piece or add new piece based on lastDeletedIndex
-        if (lastDeletedIndex < currentPiece->start + currentPiece->length &&
-            lastDeletedIndex >= currentPiece->start)
+        if (currentPiece->source == original || (lastDeletedIndex >= currentPiece->start && lastDeletedIndex < currentPiece->start + currentPiece->length))
         {
-            // Create new piece
-            pieces.push_back({sourceType::add,
-                              currentPiece->start + currentPiece->length,
-                              tsize,
-                              newLineStarts});
-            currentPiece = &pieces.back();
+            pieces.push_back({sourceType::add, 0, tsize, lineStarts});
+            activePiece = {.idx = activePiece.idx + 1, .cLen = activePiece.cLen + currentPiece->length};
         }
         else
         {
-            // Extend current piece
             currentPiece->length += tsize;
             currentPiece->lineStart.insert(
                 currentPiece->lineStart.end(),
-                newLineStarts.begin(),
-                newLineStarts.end());
+                lineStarts.begin(),
+                lineStarts.end());
         }
-
-        if (index < documentLength)
-        {
-            for (Piece *piece = currentPiece + 1; piece < &pieces.back() + 1; ++piece)
-            {
-                piece->start += tsize;
-            }
-        }
-
         documentLength += tsize;
+        Visualize();
         return;
     }
-    // Middle insertion
-    unsigned int currentLength = 0;
-    for (auto it = pieces.begin(); it != pieces.end(); ++it)
+    // Start or Middle Case
+    Piece preSplitPiece = *currentPiece;
+    auto currIter = pieces.begin() + activePiece.idx;
+    if (normalizedIdx > 0)
     {
-        unsigned int pieceEnd = currentLength + it->length;
-
-        if (index < pieceEnd)
-        {
-            unsigned int localIndex = index - currentLength;
-
-            // Cover case where we are (not)inserting exactly at start of piece
-            if (localIndex > 0)
-            {
-                Piece prevPiece = {it->source,
-                                   it->start,
-                                   localIndex,
-                                   getLineStarts(it->source, it->start, localIndex)};
-                it = pieces.erase(it);
-                it = pieces.insert(it, prevPiece);
-                ++it;
-            }
-
-            Piece newPiece = {sourceType::add,
-                              documentLength,
-                              tsize,
-                              newLineStarts};
-
-            Piece nextPiece = {it->source,
-                               it->start + localIndex + tsize,
-                               it->length - localIndex,
-                               getLineStarts(it->source, it->start + localIndex + tsize, it->length - localIndex)};
-
-            it = pieces.insert(it, newPiece);
-            currentPiece = &(*it);
-            ++it;
-            it = pieces.insert(it, nextPiece);
-            for (; it != pieces.end(); ++it)
-            {
-                if (it->source == sourceType::add)
-                {
-                    it->start += tsize;
-                }
-            }
-
-            documentLength += tsize;
-            break;
-        }
-        currentLength += it->length;
+        Piece prevPiece = {preSplitPiece.source,
+                           preSplitPiece.start,
+                           normalizedIdx,
+                           GetLineStarts(preSplitPiece.source, preSplitPiece.start, normalizedIdx)};
+        currIter = pieces.erase(currIter);
+        currIter = pieces.insert(currIter, prevPiece);
+        ++currIter;
     }
+
+    Piece middlePiece = {sourceType::add, documentLength, tsize, lineStarts};
+    currIter = pieces.insert(currIter, middlePiece);
+    activePiece = {.cLen = activePiece.cLen + normalizedIdx, .idx = normalizedIdx == 0 ? activePiece.idx : activePiece.idx + 1};
+
+    if (normalizedIdx > 0 && normalizedIdx < preSplitPiece.length)
+    {
+        unsigned int newStart = preSplitPiece.start + normalizedIdx + tsize - 1;
+        Piece nextPiece = {preSplitPiece.source,
+                           newStart,
+                           preSplitPiece.length - normalizedIdx,
+                           GetLineStarts(preSplitPiece.source, newStart, preSplitPiece.length - normalizedIdx)};
+        ++currIter;
+        currIter = pieces.insert(currIter, nextPiece);
+    }
+
+    documentLength += tsize;
+    Visualize();
 }
 
 void PieceTable::Delete(unsigned int index, unsigned int deletionLength)
 {
-    if (index + deletionLength > documentLength)
-    {
-        throw out_of_range("Delete out of range");
-    }
-    if (deletionLength == 0)
-    {
-        return;
-    }
 
-    // Update lastDeletedIndex to the highest index of deletion
-    lastDeletedIndex = index + deletionLength - 1;
-
-    // Try to use currentPiece for optimization
-    if (currentPiece &&
-        index >= currentPiece->start &&
-        index < (currentPiece->start + currentPiece->length))
-    {
-        unsigned int localIndex = index - currentPiece->start;
-        unsigned int remainingInPiece = currentPiece->length - (localIndex + deletionLength);
-
-        // Handle deletion within current piece
-        if (remainingInPiece > 0)
-        {
-            // Left part of piece remains
-            Piece leftPiece = {
-                currentPiece->source,
-                currentPiece->start,
-                localIndex,
-                getLineStarts(currentPiece->source, currentPiece->start, localIndex)};
-
-            // Right part of piece remains
-            Piece rightPiece = {
-                currentPiece->source,
-                currentPiece->start + localIndex + deletionLength,
-                remainingInPiece,
-                getLineStarts(currentPiece->source,
-                              currentPiece->start + localIndex + deletionLength,
-                              remainingInPiece)};
-
-            // Replace current piece
-            auto it = pieces.begin() + (currentPiece - &pieces[0]);
-
-            pieces.erase(it);
-
-            if (localIndex > 0)
-            {
-                pieces.insert(it, leftPiece);
-            }
-
-            if (remainingInPiece > 0)
-            {
-                pieces.insert(it, rightPiece);
-            }
-
-            documentLength -= deletionLength;
-            currentPiece = nullptr;
-            return;
-        }
-        else
-        {
-            // Entire current piece is deleted
-            auto it = pieces.begin() + (currentPiece - &pieces[0]);
-            pieces.erase(it);
-            currentPiece = nullptr;
-        }
-    }
-
-    // Fallback to general deletion logic if currentPiece doesn't cover full deletion
-    unsigned int currentLength = 0;
-    unsigned int remainingDeletion = deletionLength;
-
-    for (auto it = pieces.begin(); it != pieces.end();)
-    {
-        unsigned int pieceEnd = currentLength + it->length;
-
-        if (index < pieceEnd)
-        {
-            unsigned int localIndex = index - currentLength;
-            unsigned int deletionInPiece = min(remainingDeletion, it->length - localIndex);
-
-            // Handle piece splitting
-            if (localIndex > 0)
-            {
-                // Left part of piece
-                Piece leftPiece = {
-                    it->source,
-                    it->start,
-                    localIndex,
-                    getLineStarts(it->source, it->start, localIndex)};
-                pieces.insert(it, leftPiece);
-            }
-
-            unsigned int remainingInPiece = it->length - (localIndex + deletionInPiece);
-            if (remainingInPiece > 0)
-            {
-                // Right part of piece
-                Piece rightPiece = {
-                    it->source,
-                    it->start + localIndex + deletionInPiece,
-                    remainingInPiece,
-                    getLineStarts(it->source,
-                                  it->start + localIndex + deletionInPiece,
-                                  remainingInPiece)};
-                it = pieces.erase(it);
-                it = pieces.insert(it, rightPiece);
-            }
-            else
-            {
-                // Remove entire piece
-                it = pieces.erase(it);
-            }
-
-            remainingDeletion -= deletionInPiece;
-
-            if (remainingDeletion == 0)
-            {
-                break;
-            }
-        }
-
-        currentLength += it->length;
-        ++it;
-    }
-
-    documentLength -= deletionLength;
-    currentPiece = nullptr;
+    Visualize();
 }
 
-string PieceTable::getContent() const
+string PieceTable::GetContent() const
 {
     string content;
     for (const auto &piece : pieces)
@@ -274,7 +103,63 @@ string PieceTable::getContent() const
     return content;
 }
 
-char PieceTable::getCharAt(unsigned int index) const
+bool PieceTable::ValidActivePiece(unsigned int index)
+{
+    if (activePiece.idx < pieces.size())
+    {
+        Piece *currentPiece = &pieces[activePiece.idx];
+        if (index < activePiece.cLen)
+        {
+            return false;
+        }
+        unsigned int normalizedIdx = index - activePiece.cLen;
+        if (normalizedIdx >= 0 && normalizedIdx <= currentPiece->length)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+Piece *PieceTable::GetActivePiece(unsigned int index)
+{
+    if (ValidActivePiece(index))
+    {
+        return &pieces[activePiece.idx];
+    }
+    else
+    {
+        if (pieces.size() == 0)
+        {
+            pieces.push_back({sourceType::add, 0, static_cast<unsigned int>(0), {}});
+            activePiece = {.cLen = 0, .idx = 0};
+            documentLength = 0;
+            return &pieces.back();
+        }
+        unsigned int cumulativeLength = 0;
+        unsigned int currentIdx = 0;
+        for (auto &piece : pieces)
+        {
+            if (index < cumulativeLength)
+            {
+                break;
+            }
+            unsigned int normalIndex = index - cumulativeLength;
+            if (normalIndex < piece.length && normalIndex >= piece.start)
+            {
+                activePiece = {.cLen = cumulativeLength, .idx = currentIdx};
+                return &piece;
+            }
+            cumulativeLength += piece.length;
+            currentIdx++;
+        }
+        pieces.push_back({sourceType::add, documentLength, static_cast<unsigned int>(0), {}});
+        activePiece = {.cLen = cumulativeLength, .idx = currentIdx};
+        return &pieces.back();
+    }
+}
+
+char PieceTable::GetCharAt(unsigned int index) const
 {
     if (index >= documentLength)
     {
@@ -293,18 +178,168 @@ char PieceTable::getCharAt(unsigned int index) const
     return '\0';
 }
 
-vector<unsigned int> PieceTable::getLineStarts(sourceType src, unsigned int start, unsigned int end) const
+vector<unsigned int> PieceTable::GetLineStarts(sourceType src, unsigned int start, unsigned int len) const
 {
+    vector<unsigned int> lineStarts = {};
+    unsigned int end = start + len;
+    if (start < 0 || end < 0 || start >= documentLength || end >= documentLength)
+    {
+        return lineStarts;
+    }
     string text = src == sourceType::original
                       ? originalBuffer.substr(start, end)
                       : addBuffer.substr(start, end);
-    vector<unsigned int> lineStarts = {};
-    for (unsigned int index = 0; index < end; index++)
+    for (unsigned int index = start; index < end; index++)
     {
         if (text[index] == '\n')
         {
-            lineStarts.push_back(start + index + 1);
+            lineStarts.push_back(index + 1);
         }
     }
     return lineStarts;
+}
+
+void PieceTable::Visualize()
+{
+    const int width = 80; // Total width of visualization
+
+    if (pieces.empty())
+    {
+        return;
+    }
+
+    // Ensure the activePiece.idx is within bounds
+    if (activePiece.idx >= pieces.size())
+    {
+        cout << "Error: Invalid activePiece.idx (" << activePiece.idx << ")." << endl;
+        return;
+    }
+
+    Piece *currentPiece = &pieces[activePiece.idx]; // Current piece pointer
+    cout << string(width, '=') << endl;
+    cout << "Piece Table Visualization (Document Length: " << documentLength << ")" << endl;
+    cout << string(width, '=') << endl;
+
+    // Header
+    cout << left
+         << setw(8) << "Index"
+         << setw(10) << "Source"
+         << setw(10) << "Start"
+         << setw(10) << "Length"
+         << "Line Starts" << endl;
+    cout << string(width, '-') << endl;
+
+    // Print each piece
+    for (size_t i = 0; i < pieces.size(); i++)
+    {
+        const Piece &piece = pieces[i];
+
+        // Highlight current piece
+        if (&piece == currentPiece)
+        {
+            cout << "\033[1;32m"; // Green text for current piece
+        }
+
+        cout << left
+             << setw(8) << i
+             << setw(10) << (piece.source == sourceType::original ? "Original" : "Added")
+             << setw(10) << piece.start
+             << setw(10) << piece.length;
+
+        // Print first few line starts (if any)
+        cout << "[ ";
+        size_t shown = 0;
+        for (size_t lineStart : piece.lineStart)
+        {
+            if (shown++ < 3)
+            {
+                cout << lineStart << " ";
+            }
+            else
+            {
+                cout << "... ";
+                break;
+            }
+        }
+        cout << "]";
+
+        if (&piece == currentPiece)
+        {
+            cout << " (Current)";
+            cout << "\033[0m"; // Reset color
+        }
+
+        cout << endl;
+    }
+
+    // Visual representation of pieces
+    cout << string(width, '-') << endl;
+    cout << "Visual Map:" << endl;
+
+    unsigned int currentPos = 0;
+    string visualMap(width, ' ');
+
+    for (size_t i = 0; i < pieces.size(); i++)
+    {
+        const Piece &piece = pieces[i];
+
+        // Calculate piece's visual width proportional to its length
+        double ratio = static_cast<double>(piece.length) / documentLength;
+        int pieceWidth = max(1, static_cast<int>(ratio * (width - 2)));
+
+        // Fill the visual map
+        char fillChar = (piece.source == sourceType::original) ? 'O' : 'A';
+        for (int j = 0; j < pieceWidth && currentPos < width; j++)
+        {
+            visualMap[currentPos++] = fillChar;
+        }
+    }
+
+    cout << '[' << visualMap << ']' << endl;
+    cout << " O = Original text, A = Added text" << endl;
+
+    // Active Piece section (new addition)
+    cout << string(width, '-') << endl;
+    cout << "Active Piece (Index: " << activePiece.idx << "):" << endl;
+    cout << left
+         << setw(8) << "Index"
+         << setw(10) << "Source"
+         << setw(10) << "Start"
+         << setw(10) << "Length"
+         << "Line Starts" << endl;
+    cout << string(width, '-') << endl;
+
+    // Print active piece info
+    const Piece &active = pieces[activePiece.idx];
+    cout << left
+         << setw(8) << activePiece.idx
+         << setw(10) << (active.source == sourceType::original ? "Original" : "Added")
+         << setw(10) << active.start
+         << setw(10) << active.length;
+
+    // Print line starts for the active piece
+    cout << "[ ";
+    size_t shown = 0;
+    for (size_t lineStart : active.lineStart)
+    {
+        if (shown++ < 3)
+        {
+            cout << lineStart << " ";
+        }
+        else
+        {
+            cout << "... ";
+            break;
+        }
+    }
+    cout << "]" << endl;
+
+    cout << string(width, '=') << endl;
+
+    // Print some statistics
+    cout << "Statistics:" << endl;
+    cout << "- Total pieces: " << pieces.size() << endl;
+    cout << "- Document length: " << documentLength << " characters" << endl;
+    cout << "- Last deleted index: " << lastDeletedIndex << endl;
+    cout << string(width, '=') << endl;
 }
