@@ -5,8 +5,9 @@
 void KeyboardHandler::CharCallback(GLFWwindow *window, unsigned int codepoint)
 {
     Editor *handler = (Editor *)glfwGetWindowUserPointer(window);
-    char latestChar[2] = {(char)codepoint,'\0'};
+    char latestChar[2] = {(char)codepoint, '\0'};
     handler->InsertText(latestChar);
+    handler->MoveCursor(Direction::right);
 }
 
 // write a function to go to last char when moving vertically
@@ -43,11 +44,14 @@ void KeyboardHandler::KeyCallback(GLFWwindow *window, int key, int scancode, int
         if (key == GLFW_KEY_ENTER)
         {
             handler->InsertText("\n");
+            handler->MoveCursor(Direction::right);
+            // handler->MoveCursor(Direction::down);
             // Insert new line character move appropriately
         }
         if (key == GLFW_KEY_BACKSPACE)
         {
             handler->DeleteText(1);
+            handler->MoveCursor(Direction::left);
             // Delete from previous line if at first column and prev exists, move up and left
             // Delete from same line if text exists, move left
         }
