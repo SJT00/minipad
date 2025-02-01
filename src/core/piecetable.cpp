@@ -12,6 +12,7 @@ PieceTable::PieceTable(const string &initialContent)
     vector<unsigned int> lineStarts = GetLineStarts(sourceType::original, 0, bufferSize);
     if (bufferSize > 0)
     {
+        originalBuffer = initialContent;
         pieces.push_back({sourceType::original, 0, static_cast<unsigned int>(bufferSize), lineStarts});
         activePiece = {.cLen = 0, .idx = 0};
     }
@@ -27,9 +28,9 @@ void PieceTable::Insert(unsigned int rawIndex, const string &text)
     {
         return;
     }
-    addBuffer += text;
     unsigned int index = min(max(rawIndex, static_cast<unsigned int>(0)), documentLength);
     Piece *currentPiece = GetActivePiece(index);
+    addBuffer += text;
     if (currentPiece == nullptr)
         out_of_range("No Current Piece Found");
     vector<unsigned int> lineStarts = GetLineStarts(sourceType::add, index, tsize);
@@ -40,7 +41,9 @@ void PieceTable::Insert(unsigned int rawIndex, const string &text)
     {
         if (currentPiece->source == original || (lastDeletedIndex >= currentPiece->start && lastDeletedIndex < currentPiece->start + currentPiece->length))
         {
-            pieces.push_back({sourceType::add, 0, tsize, lineStarts});
+            // TODO: FIX/REMOVE THIS ORIGINAL BUFFER CASE
+            out_of_range("Delete Case Triggered");
+            pieces.push_back({sourceType::add, documentLength, tsize, lineStarts});
             activePiece = {.idx = activePiece.idx + 1, .cLen = activePiece.cLen + currentPiece->length};
         }
         else
@@ -68,14 +71,13 @@ void PieceTable::Insert(unsigned int rawIndex, const string &text)
         currIter = pieces.insert(currIter, prevPiece);
         ++currIter;
     }
-
-    Piece middlePiece = {sourceType::add, documentLength, tsize, lineStarts};
+    Piece middlePiece = {sourceType::add, static_cast<unsigned int>(addBuffer.size()) - tsize, tsize, lineStarts};
     currIter = pieces.insert(currIter, middlePiece);
     activePiece = {.cLen = activePiece.cLen + normalizedIdx, .idx = normalizedIdx == 0 ? activePiece.idx : activePiece.idx + 1};
 
     if (normalizedIdx > 0 && normalizedIdx < preSplitPiece.length)
     {
-        unsigned int newStart = preSplitPiece.start + normalizedIdx + tsize - 1;
+        unsigned int newStart = preSplitPiece.start + normalizedIdx;
         Piece nextPiece = {preSplitPiece.source,
                            newStart,
                            preSplitPiece.length - normalizedIdx,
@@ -131,13 +133,6 @@ Piece *PieceTable::GetActivePiece(unsigned int index)
     }
     else
     {
-        if (pieces.size() == 0)
-        {
-            pieces.push_back({sourceType::add, 0, static_cast<unsigned int>(0), {}});
-            activePiece = {.cLen = 0, .idx = 0};
-            documentLength = 0;
-            return &pieces.back();
-        }
         unsigned int cumulativeLength = 0;
         unsigned int currentIdx = 0;
         for (auto &piece : pieces)
@@ -157,7 +152,7 @@ Piece *PieceTable::GetActivePiece(unsigned int index)
         }
         if (pieces.empty() || index == documentLength)
         {
-            pieces.push_back({sourceType::add, documentLength, static_cast<unsigned int>(0), {}});
+            pieces.push_back({sourceType::add, static_cast<unsigned int>(addBuffer.size()), static_cast<unsigned int>(0), {}});
             activePiece = {.cLen = cumulativeLength, .idx = currentIdx};
             return &pieces.back();
         }
@@ -187,11 +182,16 @@ char PieceTable::GetCharAt(unsigned int index) const
 vector<unsigned int> PieceTable::GetLineStarts(sourceType src, unsigned int start, unsigned int len) const
 {
     vector<unsigned int> lineStarts = {};
+    // TODO: Make this work with original Buffer included
+    return lineStarts;
     unsigned int end = start + len;
     if (start < 0 || end < 0 || start >= documentLength || end >= documentLength)
     {
         return lineStarts;
     }
+    cout << "Type: " << (sourceType::add ? "Add" : "Original") << endl;
+    cout << "Start: " << start << endl;
+    cout << "End: " << end << endl;
     string text = src == sourceType::original
                       ? originalBuffer.substr(start, end)
                       : addBuffer.substr(start, end);

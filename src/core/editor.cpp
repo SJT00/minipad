@@ -1,7 +1,7 @@
 #include "editor.h"
 
 Editor::Editor(unsigned int width, unsigned int height, std::string fname)
-    : cursorRenderer(width, height), textRenderer(width, height, &cursor), pieceTable("")
+    : cursorRenderer(width, height), textRenderer(width, height, &cursor), pieceTable("The quick brown fox,\njumped over the lazy dog.")
 {
 }
 
