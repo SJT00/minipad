@@ -1,1 +1,4 @@
-The quick brown fox jumped over the lazy dog.
+The quick brown fox, jumped over the lazy dog.
+The quick brown fox
+jumped over the lazy dog.
+Look at all these characters!: => @#$%^&*()~123456789-+[;',./<>?|\`\n`]
