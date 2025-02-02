@@ -29,7 +29,9 @@ enum Direction
 class Editor
 {
 public:
-    Editor(unsigned int width = Globals::SCR_WIDTH, unsigned int height = Globals::SCR_HEIGHT, std::string fname = "");
+    Editor(unsigned int width = Globals::SCR_WIDTH, unsigned int height = Globals::SCR_HEIGHT, string filePath = "");
+    // Load and feed file into Piece Table
+    string LoadFile(const string &filePath);
     // Set various Keypress and Mouse movement callbacks
     void SetCallbacks(GLFWwindow *window);
     // Renders via grid to coordinate conversion with top-left being (0,0)
@@ -38,20 +40,17 @@ public:
     void SetCursorActive(bool active);
     void MoveCursor(Direction dir);
 
-    void InsertText(const char* text);
+    void InsertText(const char *text);
     void DeleteText(unsigned int length);
 
     void Scroll(Direction dir);
 
 private:
-    // FILE *fptr;
     CursorRenderer cursorRenderer;
     TextRenderer textRenderer;
     KeyboardHandler keyboardHandler;
     PieceTable pieceTable;
     Cursor cursor = {.offset = 0, .x = Globals::VIEWPORT.LEFT, .y = Globals::VIEWPORT.TOP};
-    // int cols = (Globals::VIEWPORT.WIDTH) / (Globals::FONTWIDTH);
-    // int rows = (Globals::VIEWPORT.HEIGHT) / (Globals::FONTSIZE + Globals::LINESPACING);
 };
 
 #endif

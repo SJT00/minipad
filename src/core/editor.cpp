@@ -1,8 +1,14 @@
 #include "editor.h"
 
-Editor::Editor(unsigned int width, unsigned int height, std::string fname)
-    : cursorRenderer(width, height), textRenderer(width, height, &cursor), pieceTable("The quick brown fox,\njumped over the lazy dog.")
+Editor::Editor(unsigned int width, unsigned int height, string filePath)
+    : cursorRenderer(width, height), textRenderer(width, height, &cursor), pieceTable(filePath.length() > 0 ? LoadFile(filePath) : "")
 {
+}
+
+string Editor::LoadFile(const string &filePath)
+{
+    ifstream infile{filePath};
+    return {istreambuf_iterator<char>(infile), istreambuf_iterator<char>()};
 }
 
 void Editor::SetCallbacks(GLFWwindow *window)

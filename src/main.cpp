@@ -14,12 +14,8 @@ int main(int argc, char *argv[])
     std::string fileName = "";
     if (argc > 1)
     {
-        // std::cout << "File provided: " << argv[1] << std::endl;
+        std::cout << "File provided: " << argv[1] << std::endl;
         fileName = argv[1];
-    }
-    else
-    {
-        // std::cout << "No Files provided." << std::endl;
     }
     // glfw: initialize and configure
     glfwInit();
