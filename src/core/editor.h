@@ -34,8 +34,10 @@ public:
     string LoadFile(const string &filePath);
     // Set various Keypress and Mouse movement callbacks
     void SetCallbacks(GLFWwindow *window);
-    // Renders via grid to coordinate conversion with top-left being (0,0)
+    // Main render method
     void Render();
+    // Render for external use (fps counter)
+    void RenderText(std::string text, float x, float y, float scale, glm::vec3 color);
     // Triggers cursor blinking state, true = non blinking
     void SetCursorActive(bool active);
     void MoveCursor(Direction dir);

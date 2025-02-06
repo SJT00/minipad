@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include "globals.h"
 #include "core/editor.h"
+#include "fpscounter.cpp"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
@@ -51,16 +52,19 @@ int main(int argc, char *argv[])
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    FPSCounter fpsCounter;
     Editor editor(Globals::SCR_WIDTH, Globals::SCR_HEIGHT, fileName);
     editor.SetCallbacks(window);
 
     // main: render loop
     while (!glfwWindowShouldClose(window))
     {
+        fpsCounter.Update();
         glClearColor(0.1216f, 0.1216f, 0.1216f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         editor.Render();
+        fpsCounter.Render(window);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

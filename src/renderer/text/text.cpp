@@ -100,7 +100,8 @@ void TextRenderer::RenderText(
     {
         Character ch = Characters[*c];
 
-        if (documentOffset == 0)
+        // Edge case for fps counter render
+        if (documentOffset == 0 && x < Globals::SCR_WIDTH / 2)
         {
             this->cursor->x = x;
             this->cursor->y = y;
@@ -123,16 +124,6 @@ void TextRenderer::RenderText(
         float ypos = y + (ch.Size.y - ch.Bearing.y) * scale - scrollOffsetY;
         float w = ch.Size.x * scale;
         float h = ch.Size.y * scale;
-
-        // Outside Viewport
-        // if (ypos < Globals::VIEWPORT.TOP || ypos > Globals::VIEWPORT.BOTTOM || xpos < Globals::VIEWPORT.LEFT || xpos > Globals::VIEWPORT.RIGHT)
-        // {
-        //     std::cout<<"ypos+h: "<<ypos<<" h: "<<h<<std::endl;
-        //     std::cout<<"ypos-h: "<<ypos<<" h: "<<h<<std::endl;
-        //     std::cout<<"xpos-w: "<<xpos<<" w: "<<w<<std::endl;
-        //     std::cout<<"xpos+w: "<<xpos<<" w: "<<w<<std::endl;
-        //     continue;
-        // }
 
         float vertices[6][4] = {
             {xpos, ypos - h, 0.0f, 0.0f},

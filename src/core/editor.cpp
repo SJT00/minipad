@@ -84,3 +84,8 @@ void Editor::Render()
     this->textRenderer.RenderText(this->pieceTable.GetContent(), Globals::PADDING, Globals::VIEWPORT.TOP);
     this->cursorRenderer.RenderCursor(cursor.x, cursor.y);
 }
+
+void Editor::RenderText(std::string text, float x, float y, float scale, glm::vec3 color)
+{
+    this->textRenderer.RenderText(text, x, y, scale, color);
+}
