@@ -1,4 +1,5 @@
 .vscode
 build/
 minipad
+bigTest.txt
 .DS_Store
