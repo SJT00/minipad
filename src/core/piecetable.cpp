@@ -4,6 +4,8 @@
 
 using namespace std;
 
+bool DEBUG = false;
+
 PieceTable::PieceTable() : PieceTable("") {}
 
 PieceTable::PieceTable(const string &initialContent)
@@ -207,6 +209,8 @@ vector<unsigned int> PieceTable::GetLineStarts(sourceType src, unsigned int star
 
 void PieceTable::Visualize()
 {
+    if (!DEBUG)
+        return;
     const int width = 80; // Total width of visualization
 
     if (pieces.empty())
