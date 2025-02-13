@@ -119,35 +119,41 @@ void TextRenderer::RenderText(
             }
             continue;
         }
-
-        float xpos = x + ch.Bearing.x * scale + scrollOffsetX;
-        float ypos = y + (ch.Size.y - ch.Bearing.y) * scale - scrollOffsetY;
-        float w = ch.Size.x * scale;
-        float h = ch.Size.y * scale;
-
-        float vertices[6][4] = {
-            {xpos, ypos - h, 0.0f, 0.0f},
-            {xpos, ypos, 0.0f, 1.0f},
-            {xpos + w, ypos, 1.0f, 1.0f},
-
-            {xpos, ypos - h, 0.0f, 0.0f},
-            {xpos + w, ypos, 1.0f, 1.0f},
-            {xpos + w, ypos - h, 1.0f, 0.0f}};
-
-        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-        glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        // Advance cursor for next char
-        x += (ch.Advance >> 6) * scale;
-        documentOffset++;
-        if (documentOffset == this->cursor->offset)
+        else if (std::isspace(*c))
         {
-            // Give cursor render location
-            this->cursor->x = x;
-            this->cursor->y = y;
+            x += (ch.Advance >> 6) * scale;
+        }
+        else
+        {
+            float xpos = x + ch.Bearing.x * scale + scrollOffsetX;
+            float ypos = y + (ch.Size.y - ch.Bearing.y) * scale - scrollOffsetY;
+            float w = ch.Size.x * scale;
+            float h = ch.Size.y * scale;
+
+            float vertices[6][4] = {
+                {xpos, ypos - h, 0.0f, 0.0f},
+                {xpos, ypos, 0.0f, 1.0f},
+                {xpos + w, ypos, 1.0f, 1.0f},
+
+                {xpos, ypos - h, 0.0f, 0.0f},
+                {xpos + w, ypos, 1.0f, 1.0f},
+                {xpos + w, ypos - h, 1.0f, 0.0f}};
+
+            glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+            glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+            // Advance cursor for next char
+            x += (ch.Advance >> 6) * scale;
+            documentOffset++;
+            if (documentOffset == this->cursor->offset)
+            {
+                // Give cursor render location
+                this->cursor->x = x;
+                this->cursor->y = y;
+            }
         }
     }
     glBindVertexArray(0);
