@@ -67,7 +67,6 @@ void Editor::Scroll(Direction dir)
 
 void Editor::InsertText(const char *text)
 {
-    cout << "Cursor.offset: " << cursor.offset << endl;
     pieceTable.Insert(cursor.offset, text);
 }
 
