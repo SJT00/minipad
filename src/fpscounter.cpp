@@ -24,8 +24,13 @@ public:
     void Render(GLFWwindow *window)
     {
         Editor *handler = (Editor *)glfwGetWindowUserPointer(window);
-        std::string fpsText = "FPS: " + std::to_string(fps);
-        handler->RenderText(fpsText, Globals::VIEWPORT.RIGHT - 50, Globals::VIEWPORT.TOP, 1.0, glm::vec3(1.0f, 1.0f, 0.0f));
+        glm::vec3 color = glm::vec3(1.0f, 1.0f, 0.0f);
+        if (fps < 30)
+        {
+            color = glm::vec3(1.0f, 0.0f, 0.0f);
+        }
+        handler->RenderText("FPS: ", Globals::VIEWPORT.RIGHT - 30, Globals::VIEWPORT.TOP, 1.0, glm::vec3(1.0f, 1.0f, 1.0f));
+        handler->RenderText(std::to_string(fps), Globals::VIEWPORT.RIGHT, Globals::VIEWPORT.TOP+1, 1.0, color);
     }
 
 private:
