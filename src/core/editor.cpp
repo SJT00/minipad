@@ -80,7 +80,7 @@ void Editor::DeleteText(unsigned int length)
 
 void Editor::Render()
 {
-    this->textRenderer.RenderText(this->pieceTable.GetContent(), Globals::PADDING, Globals::VIEWPORT.TOP);
+    this->textRenderer.RenderText(this->pieceTable.GetContent(), Globals::VIEWPORT.LEFT, Globals::VIEWPORT.TOP);
     this->cursorRenderer.RenderCursor(cursor.x, cursor.y);
 }
 
