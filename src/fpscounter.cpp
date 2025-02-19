@@ -14,7 +14,7 @@ public:
         frameCount++;
 
         if (currentTime - lastTime >= 1.0)
-        { // Every second
+        {
             fps = frameCount;
             frameCount = 0;
             lastTime = currentTime;
@@ -29,8 +29,11 @@ public:
         {
             color = glm::vec3(1.0f, 0.0f, 0.0f);
         }
-        handler->RenderText("FPS: ", Globals::VIEWPORT.RIGHT - 30, Globals::VIEWPORT.TOP, 1.0, glm::vec3(1.0f, 1.0f, 1.0f));
-        handler->RenderText(std::to_string(fps), Globals::VIEWPORT.RIGHT, Globals::VIEWPORT.TOP+1, 1.0, color);
+        else if(fps > 60){
+            color = glm::vec3(0.0f, 1.0f, 0.0f);
+        }
+        handler->RenderText("FPS: ", Globals::VIEWPORT.RIGHT - 48, Globals::VIEWPORT.TOP, 1.0, glm::vec3(1.0f, 1.0f, 1.0f));
+        handler->RenderText(std::to_string(fps), Globals::VIEWPORT.RIGHT - 18, Globals::VIEWPORT.TOP, 1.0, color);
     }
 
 private:
