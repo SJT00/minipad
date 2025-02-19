@@ -21,17 +21,22 @@ struct Character
 class TextRenderer
 {
 public:
-    std::map<char, Character> Characters;
-    Shader TextShader;
     TextRenderer(unsigned int width = Globals::SCR_WIDTH, unsigned int height = Globals::SCR_HEIGHT, Cursor *cursor = nullptr);
     // Gets and binds relevant font textures per char
     void Load(std::string fontSrc = Globals::FONTSRC, unsigned int fontSize = Globals::FONTSIZE);
     // Renders via precompiled characters map
     void RenderText(std::string text, float x, float y, float scale = 1.0f, glm::vec3 color = glm::vec3(1.0f));
+    void TextRenderCall(int length);
     unsigned int scrollOffsetX = 0;
     unsigned int scrollOffsetY = 0;
 
 private:
+    std::map<GLchar, Character> Characters;
+    GLuint textureArray;
+    std::vector<glm::mat4> transforms;
+    std::vector<int> letterMap;
+    Shader TextShader;
+    unsigned int fontSize;
     // Vtx arr obj and vtx buffer obj for render state
     unsigned int VAO, VBO;
     // Pointer to editors cursor obj used for rendering optimization

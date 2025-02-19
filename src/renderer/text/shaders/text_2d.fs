@@ -1,12 +1,18 @@
 #version 330 core
-in vec2 TexCoords;
-out vec4 color;
 
-uniform sampler2D text;
+in VS_OUT{
+    vec2 TexCoords;
+    flat int index;
+}fs_in;
+
+out vec4 FragColor;
+
+uniform sampler2DArray text;
+uniform int letterMap[254];
 uniform vec3 textColor;
 
 void main()
 {    
-    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);
-    color = vec4(textColor, 1.0) * sampled;
+    float alpha = texture(text, vec3(fs_in.TexCoords, letterMap[fs_in.index])).r;
+    FragColor = vec4(textColor, alpha);
 }
