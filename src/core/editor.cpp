@@ -1,14 +1,14 @@
 #include "editor.h"
 
-Editor::Editor(unsigned int width, unsigned int height, string filePath)
+Editor::Editor(unsigned int width, unsigned int height, std::string filePath)
     : cursorRenderer(width, height), textRenderer(width, height, &cursor), pieceTable(filePath.length() > 0 ? LoadFile(filePath) : "")
 {
 }
 
-string Editor::LoadFile(const string &filePath)
+std::string Editor::LoadFile(const std::string &filePath)
 {
-    ifstream infile{filePath};
-    return {istreambuf_iterator<char>(infile), istreambuf_iterator<char>()};
+    std::ifstream infile{filePath};
+    return {std::istreambuf_iterator<char>(infile), std::istreambuf_iterator<char>()};
 }
 
 void Editor::SetCallbacks(GLFWwindow *window)
@@ -40,8 +40,10 @@ void Editor::MoveCursor(Direction dir)
         }
         break;
     case Direction::up:
+        cursor.offset = pieceTable.GetPrevLine(cursor.offset);
         break;
     case Direction::down:
+        cursor.offset = pieceTable.GetNextLine(cursor.offset);
         break;
     default:
         break;

@@ -29,9 +29,9 @@ enum Direction
 class Editor
 {
 public:
-    Editor(unsigned int width = Globals::SCR_WIDTH, unsigned int height = Globals::SCR_HEIGHT, string filePath = "");
+    Editor(unsigned int width = Globals::SCR_WIDTH, unsigned int height = Globals::SCR_HEIGHT, std::string filePath = "");
     // Load and feed file into Piece Table
-    string LoadFile(const string &filePath);
+    std::string LoadFile(const std::string &filePath);
     // Set various Keypress and Mouse movement callbacks
     void SetCallbacks(GLFWwindow *window);
     // Main render method
