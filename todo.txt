@@ -1,0 +1,9 @@
+- Cache current Line
+- Wrap cursor movement to cache current piece as cursor moves within bounds
+- Tie vertical and horizontal movement to current line cache
+
+- Implement deletion
+
+- Implement scrolling and view
+
+- Implement read and write to file
