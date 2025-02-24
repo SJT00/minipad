@@ -28,22 +28,16 @@ void Editor::MoveCursor(Direction dir)
     switch (dir)
     {
     case Direction::right:
-        if (cursor.offset < pieceTable.documentLength)
-        {
-            cursor.offset++;
-        }
+        cursor.offset = pieceTable.MoveCursorX(cursor.offset, 1);
         break;
     case Direction::left:
-        if (cursor.offset > 0)
-        {
-            cursor.offset--;
-        }
+        cursor.offset = pieceTable.MoveCursorX(cursor.offset, -1);
         break;
     case Direction::up:
-        cursor.offset = pieceTable.GetPrevLine(cursor.offset);
+        cursor.offset = pieceTable.MoveCursorY(cursor.offset, 1);
         break;
     case Direction::down:
-        cursor.offset = pieceTable.GetNextLine(cursor.offset);
+        cursor.offset = pieceTable.MoveCursorY(cursor.offset, -1);
         break;
     default:
         break;
@@ -70,6 +64,7 @@ void Editor::Scroll(Direction dir)
 void Editor::InsertText(const char *text)
 {
     pieceTable.Insert(cursor.offset, text);
+    contentChanged = true;
 }
 
 void Editor::DeleteText(unsigned int length)
@@ -77,12 +72,18 @@ void Editor::DeleteText(unsigned int length)
     if (cursor.offset > 0)
     {
         pieceTable.Delete(cursor.offset, length);
+        contentChanged = true;
     }
 }
 
 void Editor::Render()
 {
-    this->textRenderer.RenderText(this->pieceTable.GetContent(), Globals::VIEWPORT.LEFT, Globals::VIEWPORT.TOP);
+    if (contentChanged)
+    {
+        cachedContent = this->pieceTable.GetContent(); // Update only if changed
+        contentChanged = false;                        // Reset change flag
+    }
+    this->textRenderer.RenderText(cachedContent, Globals::VIEWPORT.LEFT, Globals::VIEWPORT.TOP);
     this->cursorRenderer.RenderCursor(cursor.x, cursor.y);
 }
 

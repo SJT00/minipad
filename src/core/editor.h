@@ -53,6 +53,8 @@ private:
     KeyboardHandler keyboardHandler;
     PieceTable pieceTable;
     Cursor cursor = {.offset = 0, .x = Globals::VIEWPORT.LEFT, .y = Globals::VIEWPORT.TOP};
+    std::string cachedContent;  // Stores last rendered docstring
+    bool contentChanged = true; // Flag to track changes
 };
 
 #endif
