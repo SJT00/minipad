@@ -14,8 +14,7 @@ PieceTable::PieceTable(const string &initialContent)
     if (bufferSize > 0)
     {
         originalBuffer = initialContent;
-        set<unsigned int> lineStarts = GetLineStarts(sourceType::original, 0, bufferSize);
-        pieces.push_back({sourceType::original, 0, static_cast<unsigned int>(bufferSize), lineStarts});
+        pieces.push_back({sourceType::original, 0, static_cast<unsigned int>(bufferSize)});
         activePiece = {.cLen = 0, .idx = 0};
     }
     documentLength = bufferSize;
@@ -40,20 +39,16 @@ void PieceTable::Insert(unsigned int rawIndex, const string &text)
     // Appending Case
     if (normalizedIdx == currentPiece->length || currentPiece->length == 0)
     {
-        set<unsigned int> lineStarts = GetLineStarts(sourceType::add, index, tsize);
         if (currentPiece->source == original || (lastDeletedIndex >= currentPiece->start && lastDeletedIndex < currentPiece->start + currentPiece->length))
         {
             // TODO: FIX/REMOVE THIS ORIGINAL BUFFER CASE
             out_of_range("Delete Case Triggered");
-            pieces.push_back({sourceType::add, documentLength, tsize, lineStarts});
+            pieces.push_back({sourceType::add, documentLength, tsize});
             activePiece = {.idx = activePiece.idx + 1, .cLen = activePiece.cLen + currentPiece->length};
         }
         else
         {
             currentPiece->length += tsize;
-            currentPiece->lineStart.insert(
-                lineStarts.begin(),
-                lineStarts.end());
         }
         documentLength += tsize;
         Visualize();
@@ -66,16 +61,16 @@ void PieceTable::Insert(unsigned int rawIndex, const string &text)
     {
         Piece prevPiece = {preSplitPiece.source,
                            preSplitPiece.start,
-                           normalizedIdx,
-                           GetLineStarts(preSplitPiece.source, preSplitPiece.start, normalizedIdx)};
+                           normalizedIdx};
         currIter = pieces.erase(currIter);
         currIter = pieces.insert(currIter, prevPiece);
         ++currIter;
     }
-    Piece middlePiece = {sourceType::add,
-                         static_cast<unsigned int>(addBuffer.size()) - tsize,
-                         tsize,
-                         GetLineStarts(sourceType::add, static_cast<unsigned int>(addBuffer.size()) - tsize, tsize)};
+    Piece middlePiece = {
+        sourceType::add,
+        static_cast<unsigned int>(addBuffer.size()) - tsize,
+        tsize,
+    };
     currIter = pieces.insert(currIter, middlePiece);
     activePiece = {.cLen = activePiece.cLen + normalizedIdx, .idx = normalizedIdx == 0 ? activePiece.idx : activePiece.idx + 1};
 
@@ -84,8 +79,7 @@ void PieceTable::Insert(unsigned int rawIndex, const string &text)
         unsigned int newStart = preSplitPiece.start + normalizedIdx;
         Piece nextPiece = {preSplitPiece.source,
                            newStart,
-                           preSplitPiece.length - normalizedIdx,
-                           GetLineStarts(preSplitPiece.source, newStart, preSplitPiece.length - normalizedIdx)};
+                           preSplitPiece.length - normalizedIdx};
         ++currIter;
         currIter = pieces.insert(currIter, nextPiece);
     }
@@ -100,27 +94,36 @@ void PieceTable::Delete(unsigned int index, unsigned int deletionLength)
     Visualize();
 }
 
-string PieceTable::GetContent() const
+string PieceTable::GetContent()
 {
     string content;
+    lineStarts = {0};
     for (const auto &piece : pieces)
     {
         const string &buffer = piece.source == sourceType::original ? originalBuffer : addBuffer;
         content += buffer.substr(piece.start, piece.length);
     }
+    for (size_t i = 0; i < content.size(); ++i)
+    {
+        if (content[i] == '\n' && i + 1 < content.size())
+        {
+            lineStarts.push_back(i + 1);
+        }
+    }
+
     return content;
 }
 
-bool PieceTable::ValidActivePiece(unsigned int index)
+bool PieceTable::ValidActivePiece(unsigned int docIndex)
 {
     if (activePiece.idx < pieces.size())
     {
         Piece *currentPiece = &pieces[activePiece.idx];
-        if (index < activePiece.cLen)
+        if (docIndex < activePiece.cLen)
         {
             return false;
         }
-        unsigned int normalizedIdx = index - activePiece.cLen;
+        unsigned int normalizedIdx = docIndex - activePiece.cLen;
         if (normalizedIdx >= 0 && normalizedIdx <= currentPiece->length)
         {
             return true;
@@ -129,9 +132,14 @@ bool PieceTable::ValidActivePiece(unsigned int index)
     return false;
 }
 
-Piece *PieceTable::GetActivePiece(unsigned int index)
+Piece *PieceTable::GetActivePiece(unsigned int docIndex)
 {
-    if (ValidActivePiece(index))
+    return GetPiece(docIndex, true);
+}
+
+Piece *PieceTable::GetPiece(unsigned int docIndex, bool activate)
+{
+    if (ValidActivePiece(docIndex))
     {
         return &pieces[activePiece.idx];
     }
@@ -141,119 +149,162 @@ Piece *PieceTable::GetActivePiece(unsigned int index)
         unsigned int currentIdx = 0;
         for (auto &piece : pieces)
         {
-            if (index < cumulativeLength)
+            if (docIndex < cumulativeLength)
             {
                 break;
             }
-            unsigned int normalIndex = index - cumulativeLength;
+            unsigned int normalIndex = docIndex - cumulativeLength;
             if (normalIndex < piece.length)
             {
-                activePiece = {.cLen = cumulativeLength, .idx = currentIdx};
+                if (activate)
+                {
+                    activePiece = {.cLen = cumulativeLength, .idx = currentIdx};
+                }
                 return &piece;
             }
             cumulativeLength += piece.length;
             currentIdx++;
         }
-        if (pieces.empty() || index == documentLength)
+        if (pieces.empty() || docIndex == documentLength)
         {
-            pieces.push_back({sourceType::add, static_cast<unsigned int>(addBuffer.size()), static_cast<unsigned int>(0), {}});
-            activePiece = {.cLen = cumulativeLength, .idx = currentIdx};
+            pieces.push_back({sourceType::add, static_cast<unsigned int>(addBuffer.size()), static_cast<unsigned int>(0)});
+            if (activate)
+            {
+                activePiece = {.cLen = cumulativeLength, .idx = currentIdx};
+            }
             return &pieces.back();
         }
         return nullptr;
     }
 }
 
-char PieceTable::GetCharAt(unsigned int index) const
+char PieceTable::GetCharAt(unsigned int docIndex) const
 {
-    if (index >= documentLength)
+    if (docIndex >= documentLength)
     {
         return '\0';
     }
     unsigned int overallIndex = 0;
     for (const auto &piece : pieces)
     {
-        if (index < (piece.length + overallIndex) && index >= overallIndex)
+        if (docIndex < (piece.length + overallIndex) && docIndex >= overallIndex)
         {
             const string &buffer = piece.source == sourceType::original ? originalBuffer : addBuffer;
-            return buffer[index - overallIndex];
+            return buffer[docIndex - overallIndex];
         }
         overallIndex += piece.length;
     }
     return '\0';
 }
 
-set<unsigned int> PieceTable::GetLineStarts(sourceType src, unsigned int start, unsigned int len) const
+unsigned int horizMax = 0;
+
+unsigned int PieceTable::MoveCursorX(unsigned int currOffset, int dir)
 {
-    set<unsigned int> lineStarts = {};
-    string text = src == sourceType::original
-                      ? originalBuffer.substr(start, len)
-                      : addBuffer.substr(start, len);
-    for (size_t i = 0; i < text.size(); ++i)
+    int nexPos = currOffset + dir;
+    if (dir < 0 && nexPos < 0)
     {
-        if (text[i] == '\n')
-        {
-            lineStarts.insert(start + i);
-        }
+        return currOffset;
     }
-    return lineStarts;
+    else if (dir >= 0 && nexPos > documentLength)
+    {
+        return currOffset;
+    }
+
+    if (!ValidActivePiece(currOffset))
+    {
+        out_of_range("Active Piece is OFF!");
+    }
+
+    if (nexPos < activePiece.cLen)
+    {
+        if (activePiece.idx - 1 < 0)
+        {
+            return currOffset;
+        }
+        // Go one piece back
+        activePiece = {.cLen = activePiece.cLen - pieces[activePiece.idx - 1].length, .idx = activePiece.idx - 1};
+    }
+
+    if (nexPos > activePiece.cLen + pieces[activePiece.idx].length)
+    {
+        if (activePiece.idx + 1 >= pieces.size())
+        {
+            return currOffset;
+        }
+        // Go one piece forward
+        activePiece = {.cLen = activePiece.cLen + pieces[activePiece.idx].length, .idx = activePiece.idx + 1};
+    }
+
+    // Bounding horizontal Maximum to line limits
+    unsigned int currentLineIndex = std::upper_bound(lineStarts.begin(), lineStarts.end(), currOffset) - lineStarts.begin();
+
+    if (currentLineIndex > 0)
+    {
+        currentLineIndex--;
+    }
+
+    unsigned int currentLineStart = lineStarts[currentLineIndex];
+    unsigned int currentLineEnd = (currentLineIndex + 1 < lineStarts.size())
+                                      ? lineStarts[currentLineIndex + 1]
+                                      : documentLength;
+    int newOffset = static_cast<int>(currOffset) + dir;
+
+    if (newOffset < static_cast<int>(currentLineStart))
+    {
+        newOffset = currentLineStart;
+    }
+    else if (newOffset >= static_cast<int>(currentLineEnd))
+    {
+        newOffset = currentLineEnd - 1;
+    }
+
+    unsigned int newColumn = newOffset - currentLineStart;
+    horizMax = newColumn;
+    return currOffset + dir;
 }
 
-unsigned int PieceTable::GetPrevLine(unsigned int currOffset)
+unsigned int PieceTable::MoveCursorY(unsigned int currOffset, int dir)
 {
-    GetActivePiece(currOffset);
-
-    int idx = activePiece.idx;
-    while (idx >= 0)
+    if (lineStarts.empty())
     {
-        const set<unsigned int> &curLineStart = pieces[idx].lineStart;
-
-        auto it = curLineStart.lower_bound(currOffset);
-
-        if (!curLineStart.empty()) {
-            auto it = curLineStart.lower_bound(currOffset);
-
-            if (it != curLineStart.begin()) {
-                --it;
-                return *it;
-            }
-        }
-
-        idx--;
+        return currOffset;
     }
-
-    return 0;
-}
-
-unsigned int PieceTable::GetNextLine(unsigned int currOffset)
-{
-    GetActivePiece(currOffset);
-
-    unsigned int idx = activePiece.idx;
-    while (idx < pieces.size())
+    auto it = std::upper_bound(lineStarts.begin(), lineStarts.end(), currOffset);
+    unsigned int currIndex = (it == lineStarts.begin())
+                                 ? 0
+                                 : std::distance(lineStarts.begin(), it) - 1;
+    unsigned int newLineIndex;
+    if (dir < 0)
     {
-        const set<unsigned int> &curLineStart = pieces[idx].lineStart;
-
-        if (!curLineStart.empty())
+        if (currIndex >= lineStarts.size() - 1)
         {
-            auto it = curLineStart.upper_bound(currOffset);
-
-            if (it != curLineStart.end())
-            {
-                return *it;
-            }
+            return documentLength;
         }
-        idx++;
+        newLineIndex = currIndex + 1;
+    }
+    else
+    {
+        if (currIndex == 0)
+        {
+            return 0;
+        }
+        newLineIndex = currIndex - 1;
     }
 
-    return documentLength;
+    unsigned int newLineStart = lineStarts[newLineIndex];
+    unsigned int newLineEnd = (newLineIndex < lineStarts.size() - 1)
+                                  ? lineStarts[newLineIndex + 1]
+                                  : documentLength;
+    unsigned int newLineLength = newLineEnd - newLineStart;
+    return newLineStart + std::min(horizMax, newLineLength);
 }
 
 void PieceTable::Visualize()
 {
     if (!DEBUG)
         return;
-    const int width = 80; // Total width of visualization
+    const int width = 60; // Total width of visualization
 
     if (pieces.empty())
     {
@@ -277,9 +328,7 @@ void PieceTable::Visualize()
          << setw(8) << "Index"
          << setw(10) << "Source"
          << setw(10) << "Start"
-         << setw(10) << "Length"
-         << "Line Starts" << endl;
-    cout << string(width, '-') << endl;
+         << setw(10) << "Length" << endl;
 
     // Print each piece
     for (size_t i = 0; i < pieces.size(); i++)
@@ -297,23 +346,6 @@ void PieceTable::Visualize()
              << setw(10) << (piece.source == sourceType::original ? "Original" : "Added")
              << setw(10) << piece.start
              << setw(10) << piece.length;
-
-        // Print first few line starts (if any)
-        cout << "[ ";
-        size_t shown = 0;
-        for (size_t lineStart : piece.lineStart)
-        {
-            if (shown++ < 3)
-            {
-                cout << lineStart << " ";
-            }
-            else
-            {
-                cout << "... ";
-                break;
-            }
-        }
-        cout << "]";
 
         if (&piece == currentPiece)
         {
@@ -350,6 +382,14 @@ void PieceTable::Visualize()
     cout << '[' << visualMap << ']' << endl;
     cout << " O = Original text, A = Added text" << endl;
 
+    // Print first few line starts (if any)
+    cout << "[ ";
+    for (unsigned int lineStart : lineStarts)
+    {
+        cout << lineStart << " ";
+    }
+    cout << "]" << endl;
+
     // Active Piece section (new addition)
     cout << string(width, '-') << endl;
     cout << "Active Piece (Index: " << activePiece.idx << "):" << endl;
@@ -357,8 +397,7 @@ void PieceTable::Visualize()
          << setw(8) << "Index"
          << setw(10) << "Source"
          << setw(10) << "Start"
-         << setw(10) << "CLen"
-         << "Line Starts" << endl;
+         << setw(10) << "CLen" << endl;
     cout << string(width, '-') << endl;
 
     // Print active piece info
@@ -367,26 +406,7 @@ void PieceTable::Visualize()
          << setw(8) << activePiece.idx
          << setw(10) << (active.source == sourceType::original ? "Original" : "Added")
          << setw(10) << active.start
-         << setw(10) << activePiece.cLen;
-
-    // Print line starts for the active piece
-    cout << "[ ";
-    size_t shown = 0;
-    for (size_t lineStart : active.lineStart)
-    {
-        if (shown++ < 3)
-        {
-            cout << lineStart << " ";
-        }
-        else
-        {
-            cout << "... ";
-            break;
-        }
-    }
-    cout << "]" << endl;
-
-    cout << string(width, '=') << endl;
+         << setw(10) << activePiece.cLen << endl;
 
     // Print some statistics
     cout << "Statistics:" << endl;

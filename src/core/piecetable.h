@@ -17,7 +17,6 @@ struct Piece
     sourceType source;
     unsigned int start;
     unsigned int length;
-    std::set<unsigned int> lineStart;
 };
 
 struct CachedPiece
@@ -35,15 +34,20 @@ public:
     PieceTable(const std::string &originalText);
     void Insert(unsigned int rawIndex, const std::string &text);
     void Delete(unsigned int rawIndex, unsigned int length);
-    std::string GetContent() const;
-    char GetCharAt(unsigned int rawIndex) const;
-    std::set<unsigned int> GetLineStarts(sourceType src, unsigned int start, unsigned int end) const;
+    std::string GetContent();
+    char GetCharAt(unsigned int docIndex) const;
 
     // Active Piece functions expect bounded index
-    bool ValidActivePiece(unsigned int index);
-    Piece *GetActivePiece(unsigned int index);
-    unsigned int GetPrevLine(unsigned int currOffset);
-    unsigned int GetNextLine(unsigned int currOffset);
+
+    // Checks if given document index is in active piece
+    bool ValidActivePiece(unsigned int docIndex);
+    // Gets current piece and makes it the active piece
+    Piece *GetActivePiece(unsigned int docIndex);
+    // Gets the piece by index in document string
+    Piece *GetPiece(unsigned int docIndex, bool activate = false);
+
+    unsigned int MoveCursorX(unsigned int currOffset, int dir);
+    unsigned int MoveCursorY(unsigned int currOffset, int dir);
 
     // Visual Debugging Function
     void Visualize();
@@ -55,8 +59,8 @@ private:
     std::string addBuffer;
     std::vector<Piece> pieces;
     CachedPiece activePiece = {0, 0}; // Utilized to prevent spamming new pieces when middle modification
-    unsigned int CurrentLine[2];      // Range of current line based of new line chars only stores end \n
     int lastDeletedIndex = -1;        // Prevents inclusion of deleted text
+    std::vector<unsigned int> lineStarts;
 };
 
 #endif
